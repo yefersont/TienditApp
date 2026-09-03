@@ -92,6 +92,63 @@ export class InventarioService {
     });
   }
 
+
+  async actualizarStock(
+    sucursalId: string,
+    productoId: string,
+    cantidad: number,
+    usuarioId: string,
+  ) {
+    if (cantidad < 0) {
+      throw new BadRequestException(
+        'La cantidad no puede ser negativa',
+      );
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const inventario = await tx.inventario.findUnique({
+        where: {
+          sucursalId_productoId: {
+            sucursalId,
+            productoId,
+          },
+        },
+      });
+
+      if (!inventario) {
+        throw new BadRequestException(
+          'El producto no existe en el inventario de esta sucursal',
+        );
+      }
+
+      const diferencia = cantidad - inventario.cantidad;
+
+      const inventarioActualizado = await tx.inventario.update({
+        where: {
+          id: inventario.id,
+        },
+        data: {
+          cantidad,
+        },
+      });
+
+      if (diferencia !== 0) {
+        await tx.movimientoInventario.create({
+          data: {
+            sucursalId,
+            productoId,
+            usuarioId,
+            tipo: 'AJUSTE',
+            cantidad: diferencia,
+            observacion: `Ajuste de stock: ${inventario.cantidad} → ${cantidad}`,
+          },
+        });
+      }
+
+      return inventarioActualizado;
+    });
+  }
+
   async remove(id: string) {
     return this.prisma.inventario.delete({
       where: { id },

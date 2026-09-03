@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
 import { InventarioService } from './inventario.service';
 
 @Controller('inventario')
@@ -39,4 +39,22 @@ export class InventarioController {
   remove(@Param('id') id: string) {
     return this.inventarioService.remove(id);
   }
+  @Patch('stock')
+  async actualizarStock(
+    @Body() body: {
+      sucursalId: string;
+      productoId: string;
+      cantidad: number;
+      usuarioId: string;
+    },
+  ) {
+    return this.inventarioService.actualizarStock(
+      body.sucursalId,
+      body.productoId,
+      body.cantidad,
+      body.usuarioId,
+    );
+  }
+
+
 }
