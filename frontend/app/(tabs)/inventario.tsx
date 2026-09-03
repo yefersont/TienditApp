@@ -17,6 +17,7 @@ import {
 } from 'lucide-react-native';
 import Loader from '../../components/loader';
 import API_URL from '../../services/apis';
+
 type Producto = {
     id: string;
     nombre: string;
@@ -45,16 +46,20 @@ export default function InventarioScreen() {
 
     const obtenerProductos = async (refresh = false) => {
         if (!sucursalId) return;
+
         if (refresh) {
             setActualizando(true);
         }
+
         try {
             const response = await fetch(
                 `${API_URL}/productos/sucursal/${sucursalId}`
             );
+
             if (!response.ok) {
                 throw new Error('Error al obtener el inventario');
             }
+
             const data: Producto[] = await response.json();
             setProductos(data);
         } catch (error) {
@@ -72,7 +77,27 @@ export default function InventarioScreen() {
     const irACrearProducto = () => {
         router.push({
             pathname: '/producto/NuevoProducto',
-            params: { sucursalId, sucursalNombre },
+            params: {
+                sucursalId,
+                sucursalNombre,
+            },
+        });
+    };
+
+    const irADetalleProducto = (producto: Producto) => {
+        router.push({
+            pathname: '/producto/DetalleProducto',
+            params: {
+                productoId: producto.id,
+                productoNombre: producto.nombre,
+                sucursalId,
+                sucursalNombre,
+                stock: String(producto.stock),
+                precioCompra: producto.precioCompra,
+                precioVenta: producto.precioVenta,
+                stockMinimo: String(producto.stockMinimo),
+                descripcion: producto.descripcion ?? '',
+            },
         });
     };
 
@@ -157,7 +182,10 @@ export default function InventarioScreen() {
                                 ListEmptyComponent={
                                     <View className="flex-1 items-center justify-center py-20">
                                         <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-[#ffcdd4]">
-                                            <Package color="#e57d90" size={28} />
+                                            <Package
+                                                color="#e57d90"
+                                                size={28}
+                                            />
                                         </View>
 
                                         <Text className="text-[18px] font-bold text-[#2D2D32]">
@@ -181,8 +209,11 @@ export default function InventarioScreen() {
                                                 .delay(index * 80)
                                                 .duration(300)}
                                         >
-                                            <View
-                                                className="mb-4 overflow-hidden rounded-[22px] bg-white"
+                                            <Pressable
+                                                onPress={() =>
+                                                    irADetalleProducto(item)
+                                                }
+                                                className="mb-4 overflow-hidden rounded-[22px] bg-white active:opacity-80"
                                                 style={{
                                                     shadowColor: '#e57d90',
                                                     shadowOpacity: 0.1,
@@ -195,17 +226,20 @@ export default function InventarioScreen() {
                                                 }}
                                             >
                                                 <View className="flex-row">
+
                                                     {/* Franja lateral de estado */}
                                                     <View
                                                         className="w-1.5"
                                                         style={{
-                                                            backgroundColor: stockBajo
-                                                                ? '#d9536f'
-                                                                : '#f1889b',
+                                                            backgroundColor:
+                                                                stockBajo
+                                                                    ? '#d9536f'
+                                                                    : '#f1889b',
                                                         }}
                                                     />
 
                                                     <View className="flex-1 px-4 py-4">
+
                                                         {/* Nombre + ícono + stock */}
                                                         <View className="flex-row items-center justify-between">
                                                             <View className="flex-1 flex-row items-center pr-3">
@@ -228,6 +262,7 @@ export default function InventarioScreen() {
                                                                 <Text className="text-[10px] font-semibold tracking-wide text-[#a15f6d]">
                                                                     STOCK
                                                                 </Text>
+
                                                                 <Text
                                                                     className={`text-[20px] font-bold ${stockBajo
                                                                         ? 'text-[#d9536f]'
@@ -255,6 +290,7 @@ export default function InventarioScreen() {
                                                                 <Text className="text-[11px] text-[#a15f6d]">
                                                                     Compra
                                                                 </Text>
+
                                                                 <Text className="mt-1 text-[14px] font-semibold text-[#2D2D32]">
                                                                     {formatoPrecio(
                                                                         item.precioCompra
@@ -266,6 +302,7 @@ export default function InventarioScreen() {
                                                                 <Text className="text-[11px] text-[#a15f6d]">
                                                                     Venta
                                                                 </Text>
+
                                                                 <Text className="mt-1 text-[14px] font-semibold text-[#2D2D32]">
                                                                     {formatoPrecio(
                                                                         item.precioVenta
@@ -277,6 +314,7 @@ export default function InventarioScreen() {
                                                                 <Text className="text-[11px] text-[#a15f6d]">
                                                                     Mínimo
                                                                 </Text>
+
                                                                 <Text className="mt-1 text-[14px] font-semibold text-[#2D2D32]">
                                                                     {item.stockMinimo}
                                                                 </Text>
@@ -290,14 +328,21 @@ export default function InventarioScreen() {
                                                                     color="#d9536f"
                                                                     size={14}
                                                                 />
+
                                                                 <Text className="ml-2 text-[12px] font-semibold text-[#d9536f]">
                                                                     Stock bajo
                                                                 </Text>
                                                             </View>
                                                         )}
+
+                                                        {/* Indicador de que se puede tocar */}
+                                                        <Text className="mt-3 text-center text-[11px] font-semibold text-[#e57d90]">
+                                                            Toca para ver el producto
+                                                        </Text>
+
                                                     </View>
                                                 </View>
-                                            </View>
+                                            </Pressable>
                                         </Animated.View>
                                     );
                                 }}
@@ -315,12 +360,20 @@ export default function InventarioScreen() {
                             shadowColor: '#e57d90',
                             shadowOpacity: 0.35,
                             shadowRadius: 12,
-                            shadowOffset: { width: 0, height: 6 },
+                            shadowOffset: {
+                                width: 0,
+                                height: 6,
+                            },
                             elevation: 6,
                         }}
                     >
-                        <Plus color="#ffffff" size={28} strokeWidth={2.5} />
+                        <Plus
+                            color="#ffffff"
+                            size={28}
+                            strokeWidth={2.5}
+                        />
                     </Pressable>
+
                 </SafeAreaView>
             </View>
         </>

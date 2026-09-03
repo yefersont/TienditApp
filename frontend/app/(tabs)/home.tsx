@@ -15,6 +15,7 @@ import {
   Boxes,
   History,
   ChevronRight,
+  Wallet, TrendingUp, ArrowLeftRight
 } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import API_URL from '../../services/apis';
@@ -71,12 +72,6 @@ const accesosSecundarios = [
     titulo: 'Ver inventario',
     ruta: '/inventario',
     icono: Boxes,
-  },
-  {
-    id: '4',
-    titulo: 'Historial',
-    ruta: '/movimientos',
-    icono: History,
   },
 ];
 
@@ -338,34 +333,88 @@ export default function HomeScreen() {
           {/* =========================
               RESUMEN
           ========================= */}
-
           <View className="-mt-1 mb-7 flex-row gap-3">
 
             {/* Ventas */}
-            <View className="flex-1 rounded-[18px] bg-white px-4 py-4 shadow-sm">
-              <Text className="text-[12px] font-medium text-[#a15f6d]">
+            <View
+              className="flex-1 rounded-[20px] bg-white px-4 py-4"
+              style={{
+                borderWidth: 1,
+                borderColor: '#ffe3e8',
+                shadowColor: '#e57d90',
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 3 },
+                elevation: 2,
+              }}
+            >
+              <View className="mb-3 h-8 w-8 items-center justify-center rounded-full bg-[#ffcdd4]">
+                <Wallet color="#e57d90" size={16} />
+              </View>
+
+              <Text className="text-[11px] font-medium text-[#a15f6d]">
                 Ventas del mes
               </Text>
 
-              <Text className="mt-1 text-[17px] font-bold text-[#2D2D32]">
+              <Text
+                className="mt-1 font-bold text-[#2D2D32]"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={{ fontSize: 17 }}
+              >
                 {formatoPesos(dashboard.resumen.ventas)}
               </Text>
             </View>
 
             {/* Utilidad */}
-            <View className="flex-1 rounded-[18px] bg-white px-4 py-4 shadow-sm">
-              <Text className="text-[12px] font-medium text-[#a15f6d]">
+            <View
+              className="flex-1 rounded-[20px] bg-white px-4 py-4"
+              style={{
+                borderWidth: 1,
+                borderColor: '#dcf3e6',
+                shadowColor: '#4CAF7D',
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 3 },
+                elevation: 2,
+              }}
+            >
+              <View className="mb-3 h-8 w-8 items-center justify-center rounded-full bg-[#dcf3e6]">
+                <TrendingUp color="#4CAF7D" size={16} />
+              </View>
+
+              <Text className="text-[11px] font-medium text-[#a15f6d]">
                 Utilidad
               </Text>
 
-              <Text className="mt-1 text-[17px] font-bold text-[#4CAF7D]">
+              <Text
+                className="mt-1 font-bold text-[#4CAF7D]"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={{ fontSize: 17 }}
+              >
                 {formatoPesos(dashboard.resumen.utilidad)}
               </Text>
             </View>
 
             {/* Movimientos */}
-            <View className="flex-1 rounded-[18px] bg-white px-4 py-4 shadow-sm">
-              <Text className="text-[12px] font-medium text-[#a15f6d]">
+            <View
+              className="flex-1 rounded-[20px] bg-white px-4 py-4"
+              style={{
+                borderWidth: 1,
+                borderColor: '#fdecd2',
+                shadowColor: '#e8a33d',
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 3 },
+                elevation: 2,
+              }}
+            >
+              <View className="mb-3 h-8 w-8 items-center justify-center rounded-full bg-[#fdecd2]">
+                <ArrowLeftRight color="#e8a33d" size={16} />
+              </View>
+
+              <Text className="text-[11px] font-medium text-[#a15f6d]">
                 Movimientos
               </Text>
 
@@ -558,16 +607,6 @@ export default function HomeScreen() {
               <Text className="text-[16px] font-bold text-[#2D2D32]">
                 Actividad reciente
               </Text>
-
-              <Pressable
-                onPress={() => {
-                  router.push('/movimientos');
-                }}
-              >
-                <Text className="text-[13px] font-semibold text-[#e57d90]">
-                  Ver todo
-                </Text>
-              </Pressable>
 
             </View>
 
