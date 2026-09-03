@@ -13,6 +13,7 @@ import {
     TriangleAlert,
 } from 'lucide-react-native';
 import { useState } from 'react';
+import API_URL from '@/services/apis';
 
 export default function DetalleProducto() {
     const {
@@ -78,34 +79,32 @@ export default function DetalleProducto() {
         try {
             setGuardando(true);
 
-            // Aquí irá el endpoint para actualizar el stock.
-            console.log('Actualizando stock...');
-            console.log('Producto:', productoId);
-            console.log('Sucursal:', sucursalId);
-            console.log('Nuevo stock:', cantidad);
+            const datos = {
+                sucursalId,
+                productoId,
+                cantidad,
+                usuarioId: 'dbdd3a26-725c-4bf8-8966-595d72941bd4',
+            };
 
-            /*
             const response = await fetch(
-                `${ API_URL } /inventario/${ productoId } `,
+                `${API_URL}/inventario/stock`,
                 {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        cantidad,
-                    }),
+                    body: JSON.stringify(datos),
                 }
             );
+
+            router.back();
 
             if (!response.ok) {
                 throw new Error('No se pudo actualizar el stock');
             }
-            */
 
-            // Cuando el backend confirme correctamente,
-            // el nuevo stock pasa a ser el stock original.
-            // Esto lo conectaremos con el endpoint real.
+            const resultado = await response.json();
+            console.log('Stock actualizado:', resultado);
         } catch (error) {
             console.log('Error al actualizar stock:', error);
         } finally {
@@ -195,25 +194,8 @@ export default function DetalleProducto() {
                                             {productoNombre}
                                         </Text>
 
-                                        {sucursalNombre && (
-                                            <Text className="mt-1 text-[13px] text-[#a15f6d]">
-                                                {sucursalNombre}
-                                            </Text>
-                                        )}
                                     </View>
                                 </View>
-
-                                {/* Descripción */}
-                                {descripcion ? (
-                                    <>
-                                        <View className="my-4 h-[1px] bg-[#ffe3e8]" />
-
-                                        <Text className="text-[13px] leading-[19px] text-[#a15f6d]">
-                                            {descripcion}
-                                        </Text>
-                                    </>
-                                ) : null}
-
                             </View>
                         </View>
 
