@@ -149,6 +149,33 @@ export class InventarioService {
     });
   }
 
+  async obtenerHistorial() {
+    return this.prisma.movimientoInventario.findMany({
+      include: {
+        producto: {
+          select: {
+            id: true,
+            nombre: true,
+          },
+        },
+        sucursal: {
+          select: {
+            id: true,
+            nombre: true,
+          },
+        },
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
   async remove(id: string) {
     return this.prisma.inventario.delete({
       where: { id },

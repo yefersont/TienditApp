@@ -12,6 +12,11 @@ export class InventarioController {
     return this.inventarioService.findAll();
   }
 
+  @Get('historial')
+  async obtenerHistorial() {
+    return this.inventarioService.obtenerHistorial();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.inventarioService.findOne(id);
@@ -55,6 +60,7 @@ export class InventarioController {
       body.usuarioId,
     );
   }
+
 
 
 }
