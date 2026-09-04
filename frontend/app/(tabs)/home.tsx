@@ -73,6 +73,12 @@ const accesosSecundarios = [
     ruta: '/inventario',
     icono: Boxes,
   },
+  {
+    id: '4',
+    titulo: 'Historial',
+    ruta: '/historial/historial',
+    icono: History,
+  },
 ];
 
 const tipoConfig = {

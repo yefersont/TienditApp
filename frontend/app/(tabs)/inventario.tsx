@@ -2,11 +2,12 @@ import {
     FlatList,
     Pressable,
     Text,
+    TextInput,
     View,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
@@ -14,6 +15,9 @@ import {
     Package,
     TriangleAlert,
     Plus,
+    Search,
+    X,
+    PackageSearch,
 } from 'lucide-react-native';
 import Loader from '../../components/loader';
 import API_URL from '../../services/apis';
@@ -37,6 +41,7 @@ export default function InventarioScreen() {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [cargando, setCargando] = useState(true);
     const [actualizando, setActualizando] = useState(false);
+    const [busqueda, setBusqueda] = useState('');
 
     useFocusEffect(
         useCallback(() => {
@@ -69,6 +74,14 @@ export default function InventarioScreen() {
             setActualizando(false);
         }
     };
+
+    const productosFiltrados = useMemo(() => {
+        const termino = busqueda.trim().toLowerCase();
+        if (!termino) return productos;
+        return productos.filter((p) =>
+            p.nombre.toLowerCase().includes(termino)
+        );
+    }, [productos, busqueda]);
 
     const formatoPrecio = (precio: string) => {
         return `$${Number(precio).toLocaleString('es-CO')}`;
@@ -141,17 +154,12 @@ export default function InventarioScreen() {
                     <View className="flex-1 px-5 pt-7">
 
                         {/* Título */}
-                        <View className="mb-5 flex-row items-center justify-between">
+                        <View className="mb-4 flex-row items-center justify-between">
                             <View className="flex-1 pr-3">
                                 <Text className="text-[22px] font-bold text-[#2D2D32]">
                                     Productos
                                 </Text>
 
-                                <Text className="mt-1 text-[14px] text-[#a15f6d]">
-                                    {sucursalNombre
-                                        ? `Disponibles en ${sucursalNombre}`
-                                        : 'Productos disponibles en esta sucursal'}
-                                </Text>
                             </View>
 
                             {!cargando && (
@@ -163,38 +171,72 @@ export default function InventarioScreen() {
                             )}
                         </View>
 
+                        {/* Buscador */}
+                        <View className="mb-5 flex-row items-center rounded-2xl border border-[#fdb4bf] bg-white px-4">
+                            <Search color="#e57d90" size={18} />
+                            <TextInput
+                                value={busqueda}
+                                onChangeText={setBusqueda}
+                                placeholder="Buscar producto..."
+                                placeholderTextColor="#c59aa3"
+                                className="ml-3 flex-1 text-[15px] text-[#2D2D32]"
+                            />
+                            {busqueda.length > 0 && (
+                                <Pressable
+                                    onPress={() => setBusqueda('')}
+                                    hitSlop={8}
+                                >
+                                    <X color="#c59aa3" size={18} />
+                                </Pressable>
+                            )}
+                        </View>
+
                         {cargando ? (
                             <Loader />
                         ) : (
                             <FlatList
-                                data={productos}
+                                data={productosFiltrados}
                                 keyExtractor={(item) => item.id}
                                 showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps="handled"
 
                                 refreshing={actualizando}
                                 onRefresh={() => obtenerProductos(true)}
 
                                 contentContainerStyle={{
                                     paddingBottom: 110,
-                                    flexGrow: productos.length === 0 ? 1 : 0,
+                                    flexGrow:
+                                        productosFiltrados.length === 0
+                                            ? 1
+                                            : 0,
                                 }}
 
                                 ListEmptyComponent={
                                     <View className="flex-1 items-center justify-center py-20">
                                         <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-[#ffcdd4]">
-                                            <Package
-                                                color="#e57d90"
-                                                size={28}
-                                            />
+                                            {busqueda ? (
+                                                <PackageSearch
+                                                    color="#e57d90"
+                                                    size={28}
+                                                />
+                                            ) : (
+                                                <Package
+                                                    color="#e57d90"
+                                                    size={28}
+                                                />
+                                            )}
                                         </View>
 
                                         <Text className="text-[18px] font-bold text-[#2D2D32]">
-                                            Sin productos
+                                            {busqueda
+                                                ? 'Sin resultados'
+                                                : 'Sin productos'}
                                         </Text>
 
                                         <Text className="mt-2 text-center text-[14px] text-[#a15f6d]">
-                                            Esta sucursal no tiene productos
-                                            registrados.
+                                            {busqueda
+                                                ? `No encontramos productos que coincidan con "${busqueda}".`
+                                                : 'Esta sucursal no tiene productos registrados.'}
                                         </Text>
                                     </View>
                                 }
