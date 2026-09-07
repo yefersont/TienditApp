@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://10.165.57.89:3000';
+const API_URL = 'https://tienditapp-backend.onrender.com';
 
 const TOKEN_KEY = '@tienditapp_token';
 
