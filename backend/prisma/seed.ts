@@ -130,6 +130,30 @@ async function main() {
         },
     });
 
+    const lacteos = await prisma.categoria.upsert({
+        where: {
+            nombre: "Lácteos",
+        },
+        update: {},
+        create: {
+            nombre: "Lácteos",
+            descripcion: "Productos lácteos",
+            activo: true,
+        },
+    });
+
+    const aseo = await prisma.categoria.upsert({
+        where: {
+            nombre: "Aseo",
+        },
+        update: {},
+        create: {
+            nombre: "Aseo",
+            descripcion: "Productos de aseo y limpieza",
+            activo: true,
+        },
+    });
+
     const alimentos = await prisma.categoria.upsert({
         where: {
             nombre: "Alimentos",
@@ -138,6 +162,18 @@ async function main() {
         create: {
             nombre: "Alimentos",
             descripcion: "Productos alimenticios",
+            activo: true,
+        },
+    });
+
+    const confiteria = await prisma.categoria.upsert({
+        where: {
+            nombre: "Confitería",
+        },
+        update: {},
+        create: {
+            nombre: "Confitería",
+            descripcion: "Dulces, chocolates y golosinas",
             activo: true,
         },
     });
