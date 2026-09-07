@@ -14,8 +14,13 @@ import {
 } from 'lucide-react-native';
 import { useState } from 'react';
 import API_URL from '@/services/apis';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DetalleProducto() {
+
+    const auth = useAuth();
+    const usuarioId = auth.user?.id;
+
     const {
         productoId,
         productoNombre,
@@ -85,6 +90,8 @@ export default function DetalleProducto() {
                 cantidad,
                 usuarioId: 'dbdd3a26-725c-4bf8-8966-595d72941bd4',
             };
+
+            console.log(JSON.stringify(datos));
 
             const response = await fetch(
                 `${API_URL}/inventario/stock`,
