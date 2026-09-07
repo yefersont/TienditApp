@@ -18,8 +18,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function DetalleProducto() {
 
-    const auth = useAuth();
-    const usuarioId = auth.user?.id;
+    const { usuario } = useAuth();
 
     const {
         productoId,
@@ -88,7 +87,7 @@ export default function DetalleProducto() {
                 sucursalId,
                 productoId,
                 cantidad,
-                usuarioId: 'dbdd3a26-725c-4bf8-8966-595d72941bd4',
+                usuarioId: usuario?.id,
             };
 
             console.log(JSON.stringify(datos));

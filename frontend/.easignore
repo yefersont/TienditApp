@@ -1,0 +1,8 @@
+backend/
+backend/.agents/
+backend/.claude/
+.git/
+node_modules/
+.expo/
+.claude/
+.agents/

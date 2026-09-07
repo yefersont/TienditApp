@@ -30,27 +30,27 @@ import API_URL from '../../services/apis';
 
 const categorias = [
     {
-        id: '69771c72-ddb9-490d-b0db-d010f8dab5d8',
+        id: 'b9a863e3-7575-40c0-aac9-dd757e0bc476',
         nombre: 'Bebidas',
     },
     {
-        id: 'c9c4adc1-3a45-4760-a459-9db1a4220fd6',
+        id: '791ff054-1081-4fd1-b008-4997f6a4de49',
         nombre: 'Snacks',
     },
     {
-        id: '25b8ed21-21ce-4946-9a53-de1b6220acec',
+        id: '7d917704-17b0-42b3-a19a-94b026b3abf8',
         nombre: 'Lácteos',
     },
     {
-        id: '2510565e-5fc9-4273-a1a3-4958a1533b11',
+        id: '69e610a4-3cb8-4fed-942d-f8636bfb03aa',
         nombre: 'Aseo',
     },
     {
-        id: 'fef5d219-4dea-4588-b2e1-9bce99e2ceb4',
+        id: 'bda22179-8646-4cf9-ba15-38bf87fda070',
         nombre: 'Alimentos',
     },
     {
-        id: '2a987dbe-f067-4873-b592-74b940da3f3a',
+        id: '2c8dac2e-5db9-4f3f-b2be-bf4429641339',
         nombre: 'Confitería',
     },
 ];

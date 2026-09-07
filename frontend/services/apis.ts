@@ -4,10 +4,6 @@ const API_URL = 'https://tienditapp-backend.onrender.com';
 
 const TOKEN_KEY = '@tienditapp_token';
 
-/**
- * Wrapper de fetch que adjunta automáticamente el JWT en el header Authorization.
- * Úsalo en lugar de `fetch` para llamadas a rutas protegidas.
- */
 export async function authFetch(
   path: string,
   options: RequestInit = {},
