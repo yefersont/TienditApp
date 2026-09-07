@@ -47,7 +47,20 @@ async function main() {
         },
     });
 
-    console.log("Usuario creado");
+    const usuarioYefer = await prisma.usuario.upsert({
+        where: {
+            email: "Yeferson@tienditapp.com",
+        },
+        update: {},
+        create: {
+            nombre: "Administrador TienditApp",
+            email: "Yeferson@tienditapp.com",
+            password: "123456",
+            rolId: administrador.id,
+        },
+    });
+
+    console.log("Usuarios creados");
 
     // =====================================================
     // SUCURSALES
