@@ -12,10 +12,10 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-    console.log("🌱 Iniciando seed...");
+    console.log("Iniciando seed...");
 
     // =====================================================
-    // ROLES
+    // ROL
     // =====================================================
 
     const administrador = await prisma.rol.upsert({
@@ -28,92 +28,26 @@ async function main() {
         },
     });
 
-    const vendedor = await prisma.rol.upsert({
-        where: {
-            nombre: "Vendedor",
-        },
-        update: {},
-        create: {
-            nombre: "Vendedor",
-        },
-    });
-
-    const encargadoInventario = await prisma.rol.upsert({
-        where: {
-            nombre: "Encargado de Inventario",
-        },
-        update: {},
-        create: {
-            nombre: "Encargado de Inventario",
-        },
-    });
-
-    console.log("✅ Roles creados");
+    console.log("Rol creado");
 
     // =====================================================
-    // USUARIOS
+    // USUARIO
     // =====================================================
 
     const usuarioAdmin = await prisma.usuario.upsert({
         where: {
-            email: "admin@tienditapp.com",
+            email: "Angie@tienditapp.com",
         },
         update: {},
         create: {
             nombre: "Administrador TienditApp",
-            email: "admin@tienditapp.com",
+            email: "Angie@tienditapp.com",
             password: "123456",
             rolId: administrador.id,
         },
     });
 
-    const usuarioCarlos = await prisma.usuario.upsert({
-        where: {
-            email: "carlos@tienditapp.com",
-        },
-        update: {},
-        create: {
-            nombre: "Carlos Pérez",
-            email: "carlos@tienditapp.com",
-            password: "123456",
-            rolId: vendedor.id,
-        },
-    });
-
-    const usuarioLaura = await prisma.usuario.upsert({
-        where: {
-            email: "laura@tienditapp.com",
-        },
-        update: {},
-        create: {
-            nombre: "Laura Gómez",
-            email: "laura@tienditapp.com",
-            password: "123456",
-            rolId: vendedor.id,
-        },
-    });
-
-    const usuarioInventario = await prisma.usuario.upsert({
-        where: {
-            email: "inventario@tienditapp.com",
-        },
-        update: {},
-        create: {
-            nombre: "Encargado de Inventario",
-            email: "inventario@tienditapp.com",
-            password: "123456",
-            rolId: encargadoInventario.id,
-        },
-    });
-
-    console.log("✅ Usuarios creados");
-
-    console.log({
-        usuarioAdmin,
-        usuarioCarlos,
-        usuarioLaura,
-        usuarioInventario,
-    });
+    console.log("Usuario creado");
 
     // =====================================================
     // SUCURSALES
@@ -153,12 +87,7 @@ async function main() {
         });
     }
 
-    console.log("✅ Sucursales creadas");
-
-    console.log({
-        sucursalPrincipal,
-        sucursalCentro,
-    });
+    console.log("Sucursales creadas");
 
     // =====================================================
     // CATEGORÍAS
@@ -188,30 +117,6 @@ async function main() {
         },
     });
 
-    const lacteos = await prisma.categoria.upsert({
-        where: {
-            nombre: "Lácteos",
-        },
-        update: {},
-        create: {
-            nombre: "Lácteos",
-            descripcion: "Productos derivados de la leche",
-            activo: true,
-        },
-    });
-
-    const aseo = await prisma.categoria.upsert({
-        where: {
-            nombre: "Aseo",
-        },
-        update: {},
-        create: {
-            nombre: "Aseo",
-            descripcion: "Productos de limpieza",
-            activo: true,
-        },
-    });
-
     const alimentos = await prisma.categoria.upsert({
         where: {
             nombre: "Alimentos",
@@ -224,19 +129,7 @@ async function main() {
         },
     });
 
-    const confiteria = await prisma.categoria.upsert({
-        where: {
-            nombre: "Confitería",
-        },
-        update: {},
-        create: {
-            nombre: "Confitería",
-            descripcion: "Dulces y golosinas",
-            activo: true,
-        },
-    });
-
-    console.log("✅ Categorías creadas");
+    console.log("Categorías creadas");
 
     // =====================================================
     // PRODUCTOS
@@ -264,17 +157,6 @@ async function main() {
         },
     });
 
-    const jugoHit = await prisma.producto.create({
-        data: {
-            nombre: "Jugo Hit Mora 500ml",
-            descripcion: "Jugo Hit sabor mora 500ml",
-            precioCompra: 1800,
-            precioVenta: 3000,
-            stockMinimo: 10,
-            categoriaId: bebidas.id,
-        },
-    });
-
     const papasMargarita = await prisma.producto.create({
         data: {
             nombre: "Papas Margarita Natural 105g",
@@ -286,128 +168,43 @@ async function main() {
         },
     });
 
-    const chitos = await prisma.producto.create({
-        data: {
-            nombre: "Chitos 45g",
-            descripcion: "Snack de maíz",
-            precioCompra: 1500,
-            precioVenta: 2500,
-            stockMinimo: 8,
-            categoriaId: snacks.id,
-        },
-    });
-
-    const leche = await prisma.producto.create({
-        data: {
-            nombre: "Leche Entera 1L",
-            descripcion: "Leche entera larga vida 1 litro",
-            precioCompra: 3200,
-            precioVenta: 4500,
-            stockMinimo: 10,
-            categoriaId: lacteos.id,
-        },
-    });
-
-    const yogurt = await prisma.producto.create({
-        data: {
-            nombre: "Yogurt Fresa 150g",
-            descripcion: "Yogurt sabor fresa",
-            precioCompra: 1800,
-            precioVenta: 2800,
-            stockMinimo: 10,
-            categoriaId: lacteos.id,
-        },
-    });
-
-    const jabonRey = await prisma.producto.create({
-        data: {
-            nombre: "Jabón Rey",
-            descripcion: "Jabón para lavar",
-            precioCompra: 2200,
-            precioVenta: 3500,
-            stockMinimo: 5,
-            categoriaId: aseo.id,
-        },
-    });
-
-    const detergente = await prisma.producto.create({
-        data: {
-            nombre: "Detergente Ariel 500g",
-            descripcion: "Detergente en polvo 500 gramos",
-            precioCompra: 6500,
-            precioVenta: 8500,
-            stockMinimo: 5,
-            categoriaId: aseo.id,
-        },
-    });
-
-    const arroz = await prisma.producto.create({
-        data: {
-            nombre: "Arroz Diana 1Kg",
-            descripcion: "Arroz blanco 1 kilogramo",
-            precioCompra: 4200,
-            precioVenta: 5500,
-            stockMinimo: 10,
-            categoriaId: alimentos.id,
-        },
-    });
-
-    const frijol = await prisma.producto.create({
-        data: {
-            nombre: "Frijol Bola Roja 500g",
-            descripcion: "Frijol bola roja 500 gramos",
-            precioCompra: 4800,
-            precioVenta: 6500,
-            stockMinimo: 5,
-            categoriaId: alimentos.id,
-        },
-    });
-
-    const jet = await prisma.producto.create({
-        data: {
-            nombre: "Chocolatina Jet 30g",
-            descripcion: "Chocolatina Jet 30 gramos",
-            precioCompra: 1200,
-            precioVenta: 2000,
-            stockMinimo: 15,
-            categoriaId: confiteria.id,
-        },
-    });
-
-    console.log("✅ Productos creados");
+    console.log("Productos creados");
 
     // =====================================================
     // INVENTARIOS
     // =====================================================
 
     const productos = [
-        cocaCola,
-        aguaCristal,
-        jugoHit,
-        papasMargarita,
-        chitos,
-        leche,
-        yogurt,
-        jabonRey,
-        detergente,
-        arroz,
-        frijol,
-        jet,
+        {
+            producto: cocaCola,
+            principal: 30,
+            centro: 20,
+        },
+        {
+            producto: aguaCristal,
+            principal: 40,
+            centro: 25,
+        },
+        {
+            producto: papasMargarita,
+            principal: 20,
+            centro: 15,
+        },
     ];
 
-    for (const producto of productos) {
+    for (const item of productos) {
         await prisma.inventario.upsert({
             where: {
                 sucursalId_productoId: {
                     sucursalId: sucursalPrincipal.id,
-                    productoId: producto.id,
+                    productoId: item.producto.id,
                 },
             },
             update: {},
             create: {
                 sucursalId: sucursalPrincipal.id,
-                productoId: producto.id,
-                cantidad: Math.floor(Math.random() * 40) + producto.stockMinimo,
+                productoId: item.producto.id,
+                cantidad: item.principal,
             },
         });
 
@@ -415,30 +212,30 @@ async function main() {
             where: {
                 sucursalId_productoId: {
                     sucursalId: sucursalCentro.id,
-                    productoId: producto.id,
+                    productoId: item.producto.id,
                 },
             },
             update: {},
             create: {
                 sucursalId: sucursalCentro.id,
-                productoId: producto.id,
-                cantidad: Math.floor(Math.random() * 30) + producto.stockMinimo,
+                productoId: item.producto.id,
+                cantidad: item.centro,
             },
         });
     }
 
-    console.log("✅ Inventarios creados");
+    console.log("Inventarios creados");
 
     // =====================================================
     // MOVIMIENTOS DE INVENTARIO
     // =====================================================
 
-    // ENTRADAS
+    // ENTRADA - Coca Cola
     await prisma.movimientoInventario.create({
         data: {
             sucursalId: sucursalPrincipal.id,
             productoId: cocaCola.id,
-            usuarioId: usuarioInventario.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "ENTRADA",
             cantidad: 50,
             precioUnitario: cocaCola.precioVenta,
@@ -447,11 +244,12 @@ async function main() {
         },
     });
 
+    // ENTRADA - Agua Cristal
     await prisma.movimientoInventario.create({
         data: {
-            sucursalId: sucursalPrincipal.id,
+            sucursalId: sucursalCentro.id,
             productoId: aguaCristal.id,
-            usuarioId: usuarioInventario.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "ENTRADA",
             cantidad: 40,
             precioUnitario: aguaCristal.precioVenta,
@@ -460,29 +258,12 @@ async function main() {
         },
     });
 
-    await prisma.movimientoInventario.create({
-        data: {
-            sucursalId: sucursalCentro.id,
-            productoId: papasMargarita.id,
-            usuarioId: usuarioInventario.id,
-            tipo: "ENTRADA",
-            cantidad: 30,
-            precioUnitario: papasMargarita.precioVenta,
-            costoUnitario: papasMargarita.precioCompra,
-            observacion: "Reposición de inventario",
-        },
-    });
-
-
-    // =====================================================
-    // SALIDAS
-    // =====================================================
-
+    // SALIDA - Coca Cola
     await prisma.movimientoInventario.create({
         data: {
             sucursalId: sucursalPrincipal.id,
             productoId: cocaCola.id,
-            usuarioId: usuarioCarlos.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "SALIDA",
             cantidad: 3,
             precioUnitario: cocaCola.precioVenta,
@@ -496,11 +277,12 @@ async function main() {
         },
     });
 
+    // SALIDA - Agua Cristal
     await prisma.movimientoInventario.create({
         data: {
-            sucursalId: sucursalPrincipal.id,
+            sucursalId: sucursalCentro.id,
             productoId: aguaCristal.id,
-            usuarioId: usuarioLaura.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "SALIDA",
             cantidad: 5,
             precioUnitario: aguaCristal.precioVenta,
@@ -514,11 +296,12 @@ async function main() {
         },
     });
 
+    // SALIDA - Papas Margarita
     await prisma.movimientoInventario.create({
         data: {
             sucursalId: sucursalCentro.id,
             productoId: papasMargarita.id,
-            usuarioId: usuarioCarlos.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "SALIDA",
             cantidad: 2,
             precioUnitario: papasMargarita.precioVenta,
@@ -532,38 +315,28 @@ async function main() {
         },
     });
 
-
-    // =====================================================
-    // AJUSTES
-    // =====================================================
-
+    // AJUSTE - Coca Cola
     await prisma.movimientoInventario.create({
         data: {
             sucursalId: sucursalPrincipal.id,
-            productoId: leche.id,
-            usuarioId: usuarioInventario.id,
+            productoId: cocaCola.id,
+            usuarioId: usuarioAdmin.id,
             tipo: "AJUSTE",
             cantidad: -2,
             observacion: "Diferencia encontrada en inventario físico",
         },
     });
 
-    await prisma.movimientoInventario.create({
-        data: {
-            sucursalId: sucursalCentro.id,
-            productoId: yogurt.id,
-            usuarioId: usuarioInventario.id,
-            tipo: "AJUSTE",
-            cantidad: 3,
-            observacion: "Corrección de inventario físico",
-        },
-    });
+    console.log("Movimientos de inventario creados");
 
-    console.log("✅ Movimientos de inventario creados");
+    console.log("Seed completado correctamente");
+
+
 }
+
 main()
     .catch((error) => {
-        console.error("❌ Error:", error);
+        console.error("Error:", error);
         process.exit(1);
     })
     .finally(async () => {
