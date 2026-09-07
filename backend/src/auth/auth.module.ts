@@ -3,17 +3,28 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     PrismaModule,
+
+    PassportModule,
+
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'tienditapp_jwt_secret_2024',
       signOptions: { expiresIn: '7d' },
     }),
   ],
+
   controllers: [AuthController],
-  providers: [AuthService],
+
+  providers: [
+    AuthService,
+    JwtStrategy,
+  ],
+
   exports: [JwtModule],
 })
 export class AuthModule { }

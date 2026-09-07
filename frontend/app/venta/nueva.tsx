@@ -21,9 +21,9 @@ import {
     Check,
     PackageSearch,
 } from 'lucide-react-native';
-
 import Loader from '../../components/loader';
 import API_URL from '../../services/apis';
+import { useAuth } from '../../context/AuthContext';
 
 type Producto = {
     id: string;
@@ -50,7 +50,7 @@ export default function NuevaVentaScreen() {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [cargando, setCargando] = useState(true);
     const [busqueda, setBusqueda] = useState('');
-
+    const { token } = useAuth();
     const [carrito, setCarrito] = useState<Record<string, ItemCarrito>>({});
     const [carritoVisible, setCarritoVisible] = useState(false);
     const [procesando, setProcesando] = useState(false);
@@ -150,6 +150,10 @@ export default function NuevaVentaScreen() {
         try {
             setProcesando(true);
 
+            if (!token) {
+                throw new Error('No hay sesión activa');
+            }
+
             const payload = {
                 sucursalId,
                 items: itemsCarrito.map((item) => ({
@@ -158,12 +162,15 @@ export default function NuevaVentaScreen() {
                     precioUnitario: Number(item.producto.precioVenta),
                 })),
             };
-            // console.log(JSON.stringify(payload, null, 2))
 
-            // Ajusta este endpoint al de tu API real (ej. /ventas o /movimientos)
+            console.log('VENTA:', JSON.stringify(payload, null, 2));
+
             const response = await fetch(`${API_URL}/ventas`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify(payload),
             });
 
@@ -175,6 +182,7 @@ export default function NuevaVentaScreen() {
             setCarrito({});
             setCarritoVisible(false);
             router.back();
+
         } catch (error) {
             console.error('Error registrando venta:', error);
         } finally {
