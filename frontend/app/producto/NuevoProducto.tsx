@@ -21,7 +21,7 @@ import {
     Barcode,
 } from 'lucide-react-native';
 import API_URL from '../../services/apis';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // =========================
 // DATOS DE EJEMPLO
@@ -117,6 +117,12 @@ export default function NuevoProductoScreen() {
         try {
             setGuardando(true);
 
+            const token = await AsyncStorage.getItem('@tienditapp_token');
+
+            if (!token) {
+                throw new Error('No hay una sesión activa');
+            }
+
             const payload = {
                 sucursalId,
                 nombre: nombre.trim(),
@@ -135,6 +141,7 @@ export default function NuevoProductoScreen() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(payload),
             });
@@ -147,6 +154,7 @@ export default function NuevoProductoScreen() {
                 console.log('Error al crear producto:', data.message);
                 throw new Error(data.message || 'Error al crear el producto');
             }
+
             console.log('Producto creado correctamente');
 
             router.back();

@@ -163,7 +163,7 @@ export default function HomeScreen() {
       }
       setError(false);
 
-      console.log('Cargando dashboard...');
+      console.log('Cargando...');
 
       const response = await fetch(
         `${API_URL}/dashboard/${sucursalId}`,

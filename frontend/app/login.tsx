@@ -117,9 +117,6 @@ export default function LoginScreen() {
               <Text className="text-[29px] font-extrabold tracking-[0.3px] text-white">
                 TienditApp
               </Text>
-
-
-
             </Animated.View>
 
           </SafeAreaView>
@@ -162,10 +159,6 @@ export default function LoginScreen() {
                 }}
               >
 
-                {/* Título */}
-                <Text className="text-[25px] font-bold text-[#2D2D32]">
-                  Bienvenido
-                </Text>
 
                 <Text className="mt-2 text-[14px] leading-[21px] text-[#a15f6d]">
                   Ingresa tus datos para continuar

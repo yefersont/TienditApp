@@ -13,6 +13,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import API_URL from '../../services/apis';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Movimiento = {
     id: string;
@@ -46,21 +47,34 @@ export default function HistorialAjustes() {
     const [busqueda, setBusqueda] = useState('');
     const [cargando, setCargando] = useState(true);
     const [filtro, setFiltro] = useState<'todos' | 'hoy'>('hoy');
+
     const obtenerHistorial = async () => {
         try {
             setCargando(true);
 
-            const response = await fetch(
-                `${API_URL}/inventario/historial`
-            );
+            const token = await AsyncStorage.getItem('@tienditapp_token');
 
-            if (!response.ok) {
-                throw new Error('No se pudo obtener el historial');
+            if (!token) {
+                throw new Error('No hay una sesión activa');
             }
+
+            const response = await fetch(
+                `${API_URL}/inventario/historial`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             const data = await response.json();
 
             console.log('Historial recibido:', data);
+
+            if (!response.ok) {
+                throw new Error(data.message || 'No se pudo obtener el historial');
+            }
 
             setMovimientos(data);
         } catch (error) {
@@ -214,14 +228,14 @@ export default function HistorialAjustes() {
                             <Pressable
                                 onPress={() => setFiltro('hoy')}
                                 className={`rounded-full px-5 py-2.5 ${filtro === 'hoy'
-                                        ? 'bg-[#e57d90]'
-                                        : 'bg-white'
+                                    ? 'bg-[#e57d90]'
+                                    : 'bg-white'
                                     }`}
                             >
                                 <Text
                                     className={`text-[12px] font-bold ${filtro === 'hoy'
-                                            ? 'text-white'
-                                            : 'text-[#a15f6d]'
+                                        ? 'text-white'
+                                        : 'text-[#a15f6d]'
                                         }`}
                                 >
                                     Hoy
@@ -231,14 +245,14 @@ export default function HistorialAjustes() {
                             <Pressable
                                 onPress={() => setFiltro('todos')}
                                 className={`ml-2 rounded-full px-5 py-2.5 ${filtro === 'todos'
-                                        ? 'bg-[#e57d90]'
-                                        : 'bg-white'
+                                    ? 'bg-[#e57d90]'
+                                    : 'bg-white'
                                     }`}
                             >
                                 <Text
                                     className={`text-[12px] font-bold ${filtro === 'todos'
-                                            ? 'text-white'
-                                            : 'text-[#a15f6d]'
+                                        ? 'text-white'
+                                        : 'text-[#a15f6d]'
                                         }`}
                                 >
                                     Todos
@@ -255,7 +269,7 @@ export default function HistorialAjustes() {
                         {/* Cargando */}
                         {cargando && (
                             <Text className="mt-5 text-center text-[13px] text-[#a15f6d]">
-                                Cargando historial...
+                                Cargando...
                             </Text>
                         )}
 
