@@ -40,7 +40,7 @@ async function main() {
         },
         update: {},
         create: {
-            nombre: "Administrador TienditApp",
+            nombre: "Angie",
             email: "Angie@tienditapp.com",
             password: "123456",
             rolId: administrador.id,
@@ -53,7 +53,7 @@ async function main() {
         },
         update: {},
         create: {
-            nombre: "Administrador TienditApp",
+            nombre: "Yeferson",
             email: "Yeferson@tienditapp.com",
             password: "123456",
             rolId: administrador.id,

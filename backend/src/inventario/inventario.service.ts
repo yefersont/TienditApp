@@ -15,9 +15,9 @@ export class InventarioService {
     precioVenta: number;
     stockMinimo?: number;
     cantidad?: number;
+    usuarioId: string;
   }) {
     return this.prisma.$transaction(async (tx) => {
-      // 1. Buscar si el producto ya existe
       let producto = await tx.producto.findFirst({
         where: {
           nombre: data.nombre,
@@ -25,7 +25,6 @@ export class InventarioService {
         },
       });
 
-      // 2. Si no existe, crearlo
       if (!producto) {
         producto = await tx.producto.create({
           data: {
@@ -40,7 +39,6 @@ export class InventarioService {
         });
       }
 
-      // 3. Verificar si ya está en esa sucursal
       const inventarioExistente = await tx.inventario.findUnique({
         where: {
           sucursalId_productoId: {
@@ -56,18 +54,33 @@ export class InventarioService {
         );
       }
 
-      // 4. Crear el inventario en la sucursal
+      const cantidadInicial = data.cantidad ?? 0;
+
       const inventario = await tx.inventario.create({
         data: {
           sucursalId: data.sucursalId,
           productoId: producto.id,
-          cantidad: data.cantidad ?? 0,
+          cantidad: cantidadInicial,
         },
         include: {
           producto: true,
           sucursal: true,
         },
       });
+
+      if (cantidadInicial > 0) {
+        await tx.movimientoInventario.create({
+          data: {
+            sucursalId: data.sucursalId,
+            productoId: producto.id,
+            usuarioId: data.usuarioId,
+            tipo: 'ENTRADA',
+            cantidad: cantidadInicial,
+            costoUnitario: data.precioCompra,
+            observacion: `Ingreso inicial de ${cantidadInicial} unidades`,
+          },
+        });
+      }
 
       return inventario;
     });
@@ -92,7 +105,6 @@ export class InventarioService {
     });
   }
 
-
   async actualizarStock(
     sucursalId: string,
     productoId: string,
@@ -105,7 +117,7 @@ export class InventarioService {
       );
     }
 
-    return await this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const inventario = await tx.inventario.findUnique({
         where: {
           sucursalId_productoId: {
@@ -176,6 +188,7 @@ export class InventarioService {
       },
     });
   }
+
   async remove(id: string) {
     return this.prisma.inventario.delete({
       where: { id },

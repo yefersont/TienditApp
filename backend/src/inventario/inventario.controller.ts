@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+
+import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards, Req } from '@nestjs/common';
+
 import { InventarioService } from './inventario.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('inventario')
+@UseGuards(JwtAuthGuard)
 export class InventarioController {
+
   constructor(
     private readonly inventarioService: InventarioService,
   ) { }
@@ -36,31 +41,34 @@ export class InventarioController {
       stockMinimo?: number;
       cantidad?: number;
     },
+    @Req() req: any,
   ) {
-    return this.inventarioService.create(data);
+    return this.inventarioService.create({
+      ...data,
+      usuarioId: req.user.sub,
+    });
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.inventarioService.remove(id);
   }
+
   @Patch('stock')
   async actualizarStock(
-    @Body() body: {
+    @Body()
+    body: {
       sucursalId: string;
       productoId: string;
       cantidad: number;
-      usuarioId: string;
     },
+    @Req() req: any,
   ) {
     return this.inventarioService.actualizarStock(
       body.sucursalId,
       body.productoId,
       body.cantidad,
-      body.usuarioId,
+      req.user.sub,
     );
   }
-
-
-
 }
