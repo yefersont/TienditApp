@@ -218,12 +218,6 @@ export default function NuevaVentaScreen() {
                                 <Text className="text-[20px] font-bold text-white">
                                     Nueva venta
                                 </Text>
-
-                                {sucursalNombre ? (
-                                    <Text className="mt-0.5 text-[13px] text-[#ffe3e8]">
-                                        {sucursalNombre}
-                                    </Text>
-                                ) : null}
                             </View>
                         </View>
 
