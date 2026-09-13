@@ -139,7 +139,7 @@ export default function HomeScreen() {
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
   const [error, setError] = useState(false);
-
+  const [mostrarTodos, setMostrarTodos] = useState(false);
   // =========================
   // CARGAR DASHBOARD
   // =========================
@@ -216,16 +216,12 @@ export default function HomeScreen() {
           />
 
           <Text className="mt-3 text-[14px] text-[#a15f6d]">
-            Cargando dashboard...
+            Cargando...
           </Text>
         </View>
       </>
     );
   }
-
-  // =========================
-  // ERROR
-  // =========================
 
   if (error || !dashboard) {
     return (
@@ -614,6 +610,14 @@ export default function HomeScreen() {
                 Actividad reciente
               </Text>
 
+              {dashboard.movimientosRecientes.length > 2 && (
+                <Pressable onPress={() => setMostrarTodos(!mostrarTodos)}>
+                  <Text className="text-[13px] font-semibold text-[#e57d90]">
+                    {mostrarTodos ? 'Mostrar menos' : 'Mostrar todo'}
+                  </Text>
+                </Pressable>
+              )}
+
             </View>
 
             <View className="rounded-[18px] bg-white px-4">
@@ -628,62 +632,65 @@ export default function HomeScreen() {
 
               ) : (
 
-                dashboard.movimientosRecientes.map(
-                  (mov, index) => {
+                (mostrarTodos
+                  ? dashboard.movimientosRecientes
+                  : dashboard.movimientosRecientes.slice(0, 2)
+                ).map((mov, index) => {
 
-                    const config = tipoConfig[mov.tipo];
+                  const config = tipoConfig[mov.tipo];
 
-                    return (
+                  const movimientosMostrados = mostrarTodos
+                    ? dashboard.movimientosRecientes
+                    : dashboard.movimientosRecientes.slice(0, 2);
+
+                  return (
+                    <View
+                      key={mov.id}
+                      className={`flex-row items-center py-3 ${index !== movimientosMostrados.length - 1
+                        ? 'border-b border-[#fdb4bf]/30'
+                        : ''
+                        }`}
+                    >
+
                       <View
-                        key={mov.id}
-                        className={`flex-row items-center py-3 ${index !==
-                          dashboard.movimientosRecientes.length - 1
-                          ? 'border-b border-[#fdb4bf]/30'
-                          : ''
-                          }`}
-                      >
+                        className="mr-3 h-2.5 w-2.5 rounded-full"
+                        style={{
+                          backgroundColor: config.color,
+                        }}
+                      />
 
-                        <View
-                          className="mr-3 h-2.5 w-2.5 rounded-full"
-                          style={{
-                            backgroundColor: config.color,
-                          }}
-                        />
+                      <View className="flex-1">
 
-                        <View className="flex-1">
+                        <Text className="text-[14px] font-semibold text-[#2D2D32]">
+                          {mov.producto}
+                        </Text>
 
-                          <Text className="text-[14px] font-semibold text-[#2D2D32]">
-                            {mov.producto}
-                          </Text>
-
-                          <Text className="mt-0.5 text-[12px] text-[#a15f6d]">
-                            {config.etiqueta} ·{' '}
-                            {formatoHora(mov.createdAt)} ·{' '}
-                            {mov.usuario}
-                          </Text>
-
-                        </View>
-
-                        <Text
-                          className="text-[14px] font-bold"
-                          style={{
-                            color: config.color,
-                          }}
-                        >
-                          {config.signo}
-                          {Math.abs(mov.cantidad)}
+                        <Text className="mt-0.5 text-[12px] text-[#a15f6d]">
+                          {config.etiqueta} ·{' '}
+                          {formatoHora(mov.createdAt)} ·{' '}
+                          {mov.usuario}
                         </Text>
 
                       </View>
-                    );
-                  },
-                )
+
+                      <Text
+                        className="text-[14px] font-bold"
+                        style={{
+                          color: config.color,
+                        }}
+                      >
+                        {config.signo}
+                        {Math.abs(mov.cantidad)}
+                      </Text>
+
+                    </View>
+                  );
+                })
 
               )}
 
             </View>
           </View>
-
         </ScrollView>
       </View>
     </>
