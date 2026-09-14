@@ -159,11 +159,6 @@ export default function LoginScreen() {
                 }}
               >
 
-
-                <Text className="mt-2 text-[14px] leading-[21px] text-[#a15f6d]">
-                  Ingresa tus datos para continuar
-                </Text>
-
                 {/* EMAIL */}
                 <View className="mt-7">
 
