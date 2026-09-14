@@ -15,11 +15,15 @@ import {
   Boxes,
   History,
   ChevronRight,
-  Wallet, TrendingUp, ArrowLeftRight
+  Wallet,
+  TrendingUp,
+  ArrowLeftRight,
+  Menu
 } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import API_URL from '../../services/apis';
-
+import AsideMenu from '../../components/aside';
+import { useAuth } from '../../context/AuthContext';
 // =========================
 // TIPOS
 // =========================
@@ -109,7 +113,6 @@ function formatoPesos(valor: number) {
 
 function formatoHora(fecha: string) {
   const date = new Date(fecha);
-
   return date.toLocaleTimeString('es-CO', {
     hour: 'numeric',
     minute: '2-digit',
@@ -134,12 +137,13 @@ export default function HomeScreen() {
     sucursalId: string;
     sucursalNombre: string;
   }>();
-
+  const { logout } = useAuth();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
   const [error, setError] = useState(false);
   const [mostrarTodos, setMostrarTodos] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
   // =========================
   // CARGAR DASHBOARD
   // =========================
@@ -311,9 +315,28 @@ export default function HomeScreen() {
               <Text className="mt-1 text-[24px] font-bold text-white">
                 {sucursalNombre ?? 'Mi tienda'}
               </Text>
+
+
+              {/* Boton menu hamburguesa */}
+              <Pressable
+                onPress={() => setMenuAbierto(true)}
+                hitSlop={12}
+                className="absolute right-4 top-1/2 -mt-4 h-8 w-8 items-center justify-center rounded-full active:bg-white/15"
+              >
+                <Menu
+                  color="#ffffff"
+                  size={22}
+                />
+              </Pressable>
             </View>
           </SafeAreaView>
         </View>
+
+        <AsideMenu
+          visible={menuAbierto}
+          onClose={() => setMenuAbierto(false)}
+          onSalir={() => logout()}
+        />
 
         <ScrollView
           className="flex-1"
