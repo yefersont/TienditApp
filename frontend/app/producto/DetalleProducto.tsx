@@ -13,8 +13,9 @@ import {
     TriangleAlert,
 } from 'lucide-react-native';
 import { useState } from 'react';
-import API_URL from '@/services/apis';
+import API_URL, { authFetch } from '@/services/apis';
 import { useAuth } from '@/context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DetalleProducto() {
 
@@ -45,24 +46,17 @@ export default function DetalleProducto() {
     const stockInicial = Number(stock);
     const [cantidad, setCantidad] = useState(stockInicial);
     const [guardando, setGuardando] = useState(false);
-
     const minimo = Number(stockMinimo);
-
     const stockBajo = cantidad <= minimo;
     const hayCambios = cantidad !== stockInicial;
-
     const [precioCompraEditado, setPrecioCompraEditado] =
         useState(precioCompra);
-
     const [precioVentaEditado, setPrecioVentaEditado] =
         useState(precioVenta);
-
     const [guardandoPrecios, setGuardandoPrecios] = useState(false);
-
     const hayCambiosPrecios =
         precioCompraEditado !== precioCompra ||
         precioVentaEditado !== precioVenta;
-
     const formatoPrecio = (precio: string) => {
         return `$${Number(precio).toLocaleString('es-CO')} `;
     };
@@ -89,6 +83,7 @@ export default function DetalleProducto() {
                 cantidad,
                 usuarioId: usuario?.id,
             };
+            const token = await AsyncStorage.getItem('@tienditapp_token');
 
             console.log(JSON.stringify(datos));
 
@@ -98,6 +93,8 @@ export default function DetalleProducto() {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+
                     },
                     body: JSON.stringify(datos),
                 }
@@ -115,6 +112,52 @@ export default function DetalleProducto() {
             console.log('Error al actualizar stock:', error);
         } finally {
             setGuardando(false);
+        }
+    };
+
+    const actualizarPrecios = async () => {
+        if (!hayCambiosPrecios || guardandoPrecios) {
+            return;
+        }
+
+        try {
+            setGuardandoPrecios(true);
+
+            const datos = {
+                sucursalId,
+                productoId,
+                precioCompra: precioCompraEditado,
+                precioVenta: precioVentaEditado,
+            };
+
+            const token = await AsyncStorage.getItem('@tienditapp_token');
+
+            const response = await fetch(
+                `${API_URL}/productos/precio`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(datos),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('No se pudo actualizar los precios');
+            }
+
+            const resultado = await response.json();
+
+            console.log('Precios actualizados:', resultado);
+
+            router.back();
+
+        } catch (error) {
+            console.log('Error al actualizar precios:', error);
+        } finally {
+            setGuardandoPrecios(false);
         }
     };
 
@@ -428,7 +471,7 @@ export default function DetalleProducto() {
 
                                 {/* Botón actualizar precios */}
                                 <Pressable
-                                    // onPress={actualizarPrecios}
+                                    onPress={actualizarPrecios}
                                     disabled={!hayCambiosPrecios || guardandoPrecios}
                                     className={`mt-5 items-center rounded-2xl py-5 ${hayCambiosPrecios && !guardandoPrecios
                                         ? 'bg-[#e57d90] active:bg-[#d16a7d]'
