@@ -4,6 +4,7 @@ import {
     Text,
     TextInput,
     View,
+    Modal,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -43,7 +44,7 @@ export default function DetalleProducto() {
         stockMinimo: string;
         descripcion?: string;
     }>();
-
+    const [modalEliminar, setModalEliminar] = useState(false);
     const stockInicial = Number(stock);
     const [cantidad, setCantidad] = useState(stockInicial);
     const [guardando, setGuardando] = useState(false);
@@ -162,6 +163,44 @@ export default function DetalleProducto() {
         }
     };
 
+    const eliminarProducto = async () => {
+        if (guardando) {
+            return;
+        }
+
+        try {
+            setGuardando(true);
+
+            const token = await AsyncStorage.getItem('@tienditapp_token');
+
+            const response = await fetch(
+                `${API_URL}/inventario/${sucursalId}/${productoId}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('No se pudo eliminar el producto');
+            }
+
+            const resultado = await response.json();
+
+            console.log('Producto eliminado:', resultado);
+
+            router.back();
+
+        } catch (error) {
+            console.log('Error al eliminar producto:', error);
+        } finally {
+            setGuardando(false);
+        }
+    };
+
     return (
         <>
             <Stack.Screen
@@ -240,7 +279,7 @@ export default function DetalleProducto() {
                                     </View>
 
                                     <Pressable
-                                        // onPress={eliminarProducto}
+                                        onPress={() => setModalEliminar(true)}
                                         hitSlop={10}
                                         className="h-10 w-10 items-center justify-center rounded-full active:bg-[#fff0f2]"
                                     >
@@ -280,17 +319,12 @@ export default function DetalleProducto() {
                                     <Pressable
                                         onPress={disminuirStock}
                                         disabled={cantidad === 0}
-                                        className={`h-12 w-12 items-center justify-center rounded-full ${cantidad === 0
-                                            ? 'bg-[#f5e5e8]'
-                                            : 'bg-[#ffcdd4] active:bg-[#f5b9c2]'
+                                        className={`h-12 w-12 items-center justify-center rounded-full ${hayCambios
+                                            ? 'bg-[#e57d90] active:bg-[#d16a7d]'
+                                            : 'bg-[#f3b6c1]'
                                             }`}
                                     >
-                                        <Text
-                                            className={`text-[28px] font-medium ${cantidad === 0
-                                                ? 'text-[#c9aeb3]'
-                                                : 'text-[#e57d90]'
-                                                }`}
-                                        >
+                                        <Text className="text-[28px] font-medium text-white">
                                             −
                                         </Text>
                                     </Pressable>
@@ -309,13 +343,15 @@ export default function DetalleProducto() {
                                     {/* Más */}
                                     <Pressable
                                         onPress={aumentarStock}
-                                        className="h-12 w-12 items-center justify-center rounded-full bg-[#ffcdd4] active:bg-[#f5b9c2]"
+                                        className={`h-12 w-12 items-center justify-center rounded-full ${hayCambios
+                                            ? 'bg-[#e57d90] active:bg-[#d16a7d]'
+                                            : 'bg-[#f3b6c1]'
+                                            }`}
                                     >
-                                        <Text className="text-[28px] font-medium text-[#e57d90]">
+                                        <Text className="text-[28px] font-medium text-white">
                                             +
                                         </Text>
                                     </Pressable>
-
                                 </View>
 
                                 {/* Estado */}
@@ -376,7 +412,7 @@ export default function DetalleProducto() {
                                     <Text
                                         className={`text-[15px] font-bold ${hayCambios && !guardando
                                             ? 'text-white'
-                                            : 'text-[#9f6873]'
+                                            : 'text-white'
                                             }`}
                                     >
                                         {guardando
@@ -478,7 +514,7 @@ export default function DetalleProducto() {
                                 <Pressable
                                     onPress={actualizarPrecios}
                                     disabled={!hayCambiosPrecios || guardandoPrecios}
-                                    className={`mt-5 items-center rounded-2xl py-5 ${hayCambiosPrecios && !guardandoPrecios
+                                    className={`mt-5 items-center rounded-2xl py-4 ${hayCambiosPrecios && !guardandoPrecios
                                         ? 'bg-[#e57d90] active:bg-[#d16a7d]'
                                         : 'bg-[#f3b6c1]'
                                         }`}
@@ -486,7 +522,7 @@ export default function DetalleProducto() {
                                     <Text
                                         className={`text-[15px] font-bold ${hayCambiosPrecios && !guardandoPrecios
                                             ? 'text-white'
-                                            : 'text-[#9f6873]'
+                                            : 'text-white'
                                             }`}
                                     >
                                         {guardandoPrecios
@@ -500,6 +536,68 @@ export default function DetalleProducto() {
 
                     </ScrollView>
                 </SafeAreaView>
+
+                {/* Modal de confirmacion de eliminacion */}
+                <Modal
+                    visible={modalEliminar}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setModalEliminar(false)}
+                >
+                    <View className="flex-1 items-center justify-center bg-black/50 px-6">
+
+                        <View className="w-full rounded-[24px] bg-white p-6">
+
+                            <View className="mb-4 items-center">
+
+                                <View className="mb-3 h-14 w-14 items-center justify-center rounded-full bg-[#FFF0F2]">
+                                    <Trash2
+                                        size={26}
+                                        color="#E57D90"
+                                    />
+                                </View>
+
+                                <Text className="text-center text-[20px] font-bold text-[#2D2D32]">
+                                    ¿Eliminar producto?
+                                </Text>
+
+                            </View>
+
+                            <Text className="mb-6 text-center text-[15px] leading-5 text-[#6B6B70]">
+                                ¿Estás seguro de que deseas eliminar este producto de esta sucursal?
+                            </Text>
+
+                            <View className="flex-row gap-3">
+
+                                <Pressable
+                                    className="flex-1 items-center rounded-[14px] border border-[#E5E5E5] py-3"
+                                    onPress={() => setModalEliminar(false)}
+                                    disabled={guardando}
+                                >
+                                    <Text className="font-semibold text-[#55555A]">
+                                        Cancelar
+                                    </Text>
+                                </Pressable>
+
+                                <Pressable
+                                    className="flex-1 items-center rounded-[14px] bg-[#E57D90] py-3"
+                                    onPress={async () => {
+                                        await eliminarProducto();
+                                        setModalEliminar(false);
+                                    }}
+                                    disabled={guardando}
+                                >
+                                    <Text className="font-semibold text-white">
+                                        {guardando ? 'Eliminando...' : 'Eliminar'}
+                                    </Text>
+                                </Pressable>
+
+                            </View>
+
+                        </View>
+
+                    </View>
+                </Modal>
             </View>
         </>
     );
