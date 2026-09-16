@@ -189,9 +189,32 @@ export class InventarioService {
     });
   }
 
-  async remove(id: string) {
-    return this.prisma.inventario.delete({
-      where: { id },
+  async remove(sucursalId: string, productoId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const inventario = await tx.inventario.findUnique({
+        where: {
+          sucursalId_productoId: {
+            sucursalId,
+            productoId,
+          },
+        },
+      });
+
+      if (!inventario) {
+        throw new BadRequestException(
+          'El producto no existe en el inventario de esta sucursal',
+        );
+      }
+
+      await tx.inventario.delete({
+        where: {
+          id: inventario.id,
+        },
+      });
+
+      return {
+        message: 'Producto eliminado del inventario de la sucursal',
+      };
     });
   }
 }

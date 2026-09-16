@@ -49,11 +49,6 @@ export class InventarioController {
     });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.inventarioService.remove(id);
-  }
-
   @Patch('stock')
   async actualizarStock(
     @Body()
@@ -70,5 +65,14 @@ export class InventarioController {
       body.cantidad,
       req.user.sub,
     );
+  }
+
+
+  @Delete(':sucursalId/:productoId')
+  remove(
+    @Param('sucursalId') sucursalId: string,
+    @Param('productoId') productoId: string,
+  ) {
+    return this.inventarioService.remove(sucursalId, productoId);
   }
 }
