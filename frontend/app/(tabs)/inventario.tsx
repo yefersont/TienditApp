@@ -376,12 +376,6 @@ export default function InventarioScreen() {
                                                                 </Text>
                                                             </View>
                                                         )}
-
-                                                        {/* Indicador de que se puede tocar */}
-                                                        <Text className="mt-3 text-center text-[11px] font-semibold text-[#e57d90]">
-                                                            Toca para ver el producto
-                                                        </Text>
-
                                                     </View>
                                                 </View>
                                             </Pressable>

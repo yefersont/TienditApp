@@ -11,6 +11,7 @@ import {
     ArrowLeft,
     Package,
     TriangleAlert,
+    Trash2,
 } from 'lucide-react-native';
 import { useState } from 'react';
 import API_URL, { authFetch } from '@/services/apis';
@@ -228,13 +229,6 @@ export default function DetalleProducto() {
                             <View className="p-5">
 
                                 <View className="flex-row items-center">
-                                    <View className="h-14 w-14 items-center justify-center rounded-2xl bg-[#ffcdd4]">
-                                        <Package
-                                            color="#e57d90"
-                                            size={26}
-                                        />
-                                    </View>
-
                                     <View className="ml-4 flex-1">
                                         <Text
                                             className="text-[21px] font-bold text-[#2D2D32]"
@@ -244,6 +238,17 @@ export default function DetalleProducto() {
                                         </Text>
 
                                     </View>
+
+                                    <Pressable
+                                        // onPress={eliminarProducto}
+                                        hitSlop={10}
+                                        className="h-10 w-10 items-center justify-center rounded-full active:bg-[#fff0f2]"
+                                    >
+                                        <Trash2
+                                            color="#d9536f"
+                                            size={20}
+                                        />
+                                    </Pressable>
                                 </View>
                             </View>
                         </View>
