@@ -205,49 +205,48 @@ export default function NuevaVentaScreen() {
                 {/* Header */}
                 <View className="rounded-b-[40px] bg-[#e57d90]">
                     <SafeAreaView edges={['top']}>
-                        <View className="flex-row items-center px-4 py-4">
+                        <View className="h-[80px] items-center justify-center">
+
                             <Pressable
                                 onPress={() => router.back()}
                                 hitSlop={12}
-                                className="h-9 w-9 items-center justify-center rounded-full active:bg-white/15"
+                                className="absolute left-4 top-1/2 -mt-4 h-8 w-8 items-center justify-center rounded-full active:bg-white/15"
                             >
                                 <ArrowLeft color="#ffffff" size={22} />
                             </Pressable>
 
-                            <View className="flex-1 items-center pr-9">
-                                <Text className="text-[20px] font-bold text-white">
-                                    Nueva venta
-                                </Text>
-                            </View>
+                            <Text className="mt-1 text-[24px] font-bold text-white">
+                                Nueva Venta
+                            </Text>
                         </View>
-
-                        {/* Buscador */}
-                        <View className="px-6 pb-3">
-                            <View className="flex-row items-center rounded-2xl bg-white/95 px-4 py-1">
-                                <Search color="#e57d90" size={17} />
-                                <TextInput
-                                    value={busqueda}
-                                    onChangeText={setBusqueda}
-                                    placeholder="Buscar producto..."
-                                    placeholderTextColor="#c59aa3"
-                                    className="ml-3 flex-1 text-[14px] text-[#2D2D32]"
-                                />
-                                {busqueda.length > 0 && (
-                                    <Pressable
-                                        onPress={() => setBusqueda('')}
-                                        hitSlop={8}
-                                    >
-                                        <X color="#c59aa3" size={17} />
-                                    </Pressable>
-                                )}
-                            </View>
-                        </View>
-
                     </SafeAreaView>
                 </View>
 
+
+
+
                 {/* Lista de productos */}
                 <View className="flex-1 px-5 pt-4">
+
+                    {/* Buscador */}
+                    <View className="mb-5 flex-row items-center rounded-2xl border border-[#fdb4bf] bg-white px-4">
+                        <Search color="#e57d90" size={18} />
+                        <TextInput
+                            value={busqueda}
+                            onChangeText={setBusqueda}
+                            placeholder="Buscar producto..."
+                            placeholderTextColor="#c59aa3"
+                            className="ml-3 flex-1 text-[15px] text-[#2D2D32]"
+                        />
+                        {busqueda.length > 0 && (
+                            <Pressable
+                                onPress={() => setBusqueda('')}
+                                hitSlop={8}
+                            >
+                                <X color="#c59aa3" size={18} />
+                            </Pressable>
+                        )}
+                    </View>
                     {cargando ? (
                         <Loader />
                     ) : (
@@ -295,6 +294,9 @@ export default function NuevaVentaScreen() {
                                             elevation: 1,
                                         }}
                                     >
+
+
+
                                         <View className="flex-1 pr-3">
                                             <Text
                                                 className="text-[15px] font-bold text-[#2D2D32]"

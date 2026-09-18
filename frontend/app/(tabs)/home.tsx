@@ -471,38 +471,25 @@ export default function HomeScreen() {
                   },
                 });
               }}
-              className="mb-3 flex-row items-center rounded-[18px] bg-[#e57d90] px-5 py-4 active:bg-[#d16a7d]"
-              style={{
-                shadowColor: '#e57d90',
-                shadowOpacity: 0.3,
-                shadowRadius: 10,
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                elevation: 3,
-              }}
+              className="mb-3 flex-row items-center rounded-[18px] border border-[#fdb4bf] bg-white px-5 py-3.5 active:bg-[#fff0f2]"
             >
-              <View className="mr-4 h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
+              <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-[#ffcdd4]">
                 <ShoppingCart
-                  color="#ffffff"
-                  size={22}
+                  color="#e57d90"
+                  size={19}
                 />
               </View>
 
               <View className="flex-1">
-                <Text className="text-[16px] font-bold text-white">
+                <Text className="text-[15px] font-semibold text-[#2D2D32]">
                   Nueva venta
                 </Text>
 
-                <Text className="mt-0.5 text-[12px] text-white/80">
-                  Registra una venta al instante
-                </Text>
               </View>
 
               <ChevronRight
-                color="#ffffff"
-                size={20}
+                color="#c59aa3"
+                size={18}
               />
             </Pressable>
 
@@ -560,22 +547,9 @@ export default function HomeScreen() {
                 Stock bajo
               </Text>
 
-              <View className="rounded-full bg-[#e8a33d] px-2.5 py-0.5">
-                <Text className="text-[12px] font-bold text-white">
-                  {dashboard.stockBajo.length}
-                </Text>
-              </View>
-
             </View>
 
-            <View
-              className="rounded-[18px] bg-white px-4 py-2"
-              style={{
-                borderWidth: 1.5,
-                borderStyle: 'dashed',
-                borderColor: '#f99aaa',
-              }}
-            >
+            <View className="rounded-[18px] bg-white px-4 py-2">
 
               {dashboard.stockBajo.length === 0 ? (
 
@@ -607,11 +581,9 @@ export default function HomeScreen() {
 
                     </View>
 
-                    <View className="rounded-full bg-[#fff0f2] px-3 py-1">
-                      <Text className="text-[13px] font-bold text-[#e57d90]">
-                        {producto.cantidad} und
-                      </Text>
-                    </View>
+                    <Text className="text-[13px] font-bold text-[#e57d90]">
+                      {producto.cantidad} und
+                    </Text>
 
                   </View>
                 ))
@@ -647,7 +619,7 @@ export default function HomeScreen() {
 
               {dashboard.movimientosRecientes.length === 0 ? (
 
-                <View className="items-center py-5">
+                <View className="items-center py-1">
                   <Text className="text-[13px] text-[#a15f6d]">
                     No hay movimientos recientes
                   </Text>
