@@ -2,6 +2,7 @@ import {
     Pressable,
     ScrollView,
     Text,
+    Keyboard,
     TextInput,
     View,
     Modal,
@@ -10,9 +11,10 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
     ArrowLeft,
-    Package,
     TriangleAlert,
     Trash2,
+    Pencil,
+    Check,
 } from 'lucide-react-native';
 import { useState } from 'react';
 import API_URL, { authFetch } from '@/services/apis';
@@ -44,6 +46,13 @@ export default function DetalleProducto() {
         stockMinimo: string;
         descripcion?: string;
     }>();
+
+    const [nombreActual, setNombreActual] = useState(productoNombre);
+    const [editandoNombre, setEditandoNombre] = useState(false);
+    const [nuevoNombre, setNuevoNombre] = useState(productoNombre);
+    const [guardandoNombre, setGuardandoNombre] = useState(false);
+
+
     const [modalEliminar, setModalEliminar] = useState(false);
     const stockInicial = Number(stock);
     const [cantidad, setCantidad] = useState(stockInicial);
@@ -201,6 +210,69 @@ export default function DetalleProducto() {
         }
     };
 
+    const editarNombre = () => {
+        setNuevoNombre(nombreActual);
+        setEditandoNombre(true);
+    };
+
+    const guardarNombre = async () => {
+        if (guardandoNombre) {
+            return;
+        }
+
+        const nombre = nuevoNombre.trim();
+
+        if (!nombre) {
+            return;
+        }
+
+        if (nombre === nombreActual) {
+            setEditandoNombre(false);
+            Keyboard.dismiss();
+            return;
+        }
+
+        try {
+            setGuardandoNombre(true);
+
+            const token = await AsyncStorage.getItem('@tienditapp_token');
+
+            const response = await fetch(
+                `${API_URL}/productos/nombre`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        productoId,
+                        nombre,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('No se pudo actualizar el nombre');
+            }
+
+            const resultado = await response.json();
+
+            console.log('Nombre actualizado:', resultado);
+
+            setNombreActual(nombre);
+            setNuevoNombre(nombre);
+            setEditandoNombre(false);
+
+            Keyboard.dismiss();
+
+        } catch (error) {
+            console.log('Error al actualizar nombre:', error);
+        } finally {
+            setGuardandoNombre(false);
+        }
+    };
+
     return (
         <>
             <Stack.Screen
@@ -244,6 +316,7 @@ export default function DetalleProducto() {
                 >
                     <ScrollView
                         showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
                         contentContainerStyle={{
                             paddingHorizontal: 20,
                             paddingTop: 28,
@@ -268,15 +341,54 @@ export default function DetalleProducto() {
                             <View className="p-5">
 
                                 <View className="flex-row items-center">
-                                    <View className="ml-4 flex-1">
-                                        <Text
-                                            className="text-[21px] font-bold text-[#2D2D32]"
-                                            numberOfLines={2}
-                                        >
-                                            {productoNombre}
-                                        </Text>
 
+                                    <View className="ml-4 flex-1">
+                                        {editandoNombre ? (
+                                            <TextInput
+                                                value={nuevoNombre}
+                                                onChangeText={setNuevoNombre}
+                                                autoFocus
+                                                returnKeyType="done"
+                                                editable={!guardandoNombre}
+                                                className="text-[21px] font-bold text-[#2D2D32]"
+                                                placeholder="Nombre del producto"
+                                                placeholderTextColor="#c59aa3"
+                                            />
+                                        ) : (
+                                            <Text
+                                                className="text-[21px] font-bold text-[#2D2D32]"
+                                                numberOfLines={2}
+                                            >
+                                                {nombreActual}
+                                            </Text>
+                                        )}
                                     </View>
+
+                                    {editandoNombre ? (
+                                        <Pressable
+                                            onPress={guardarNombre}
+                                            disabled={guardandoNombre}
+                                            hitSlop={10}
+                                            className="mr-1 h-10 w-10 items-center justify-center rounded-full active:bg-[#fff0f2]"
+                                        >
+                                            <Check
+                                                color="#e57d90"
+                                                size={22}
+                                                strokeWidth={2.5}
+                                            />
+                                        </Pressable>
+                                    ) : (
+                                        <Pressable
+                                            onPress={editarNombre}
+                                            hitSlop={10}
+                                            className="mr-1 h-10 w-10 items-center justify-center rounded-full active:bg-[#fff0f2]"
+                                        >
+                                            <Pencil
+                                                color="#e57d90"
+                                                size={20}
+                                            />
+                                        </Pressable>
+                                    )}
 
                                     <Pressable
                                         onPress={() => setModalEliminar(true)}
@@ -288,7 +400,9 @@ export default function DetalleProducto() {
                                             size={20}
                                         />
                                     </Pressable>
+
                                 </View>
+
                             </View>
                         </View>
 
