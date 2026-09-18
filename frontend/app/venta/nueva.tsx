@@ -9,7 +9,7 @@ import {
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import {
     ArrowLeft,
     Search,
@@ -54,6 +54,7 @@ export default function NuevaVentaScreen() {
     const [carrito, setCarrito] = useState<Record<string, ItemCarrito>>({});
     const [carritoVisible, setCarritoVisible] = useState(false);
     const [procesando, setProcesando] = useState(false);
+    const ALTO_FILA = 62;
 
     const obtenerProductos = useCallback(async () => {
         if (!sucursalId) return;
@@ -80,6 +81,8 @@ export default function NuevaVentaScreen() {
             obtenerProductos();
         }, [obtenerProductos])
     );
+
+
 
     const productosFiltrados = useMemo(() => {
         const termino = busqueda.trim().toLowerCase();
@@ -189,6 +192,14 @@ export default function NuevaVentaScreen() {
             setProcesando(false);
         }
     };
+
+
+    useEffect(() => {
+        if (carritoVisible && itemsCarrito.length === 0) {
+            const timer = setTimeout(() => setCarritoVisible(false), 400);
+            return () => clearTimeout(timer);
+        }
+    }, [itemsCarrito, carritoVisible]);
 
     return (
         <>
@@ -424,14 +435,15 @@ export default function NuevaVentaScreen() {
                 animationType="slide"
                 onRequestClose={() => setCarritoVisible(false)}
             >
-                <Pressable
-                    className="flex-1 justify-end bg-black/40"
-                    onPress={() => setCarritoVisible(false)}
-                >
+                <View className="flex-1 justify-end">
+                    {/* Fondo oscuro: solo esto cierra el modal */}
                     <Pressable
-                        className="max-h-[80%] rounded-t-[32px] bg-[#fff7f8] px-6 pb-8 pt-5"
-                        onPress={(event) => event.stopPropagation()}
-                    >
+                        className="absolute inset-0 bg-black/40"
+                        onPress={() => setCarritoVisible(false)}
+                    />
+
+                    {/* Panel: ya NO es Pressable, es un View normal */}
+                    <View className="max-h-[80%] rounded-t-[32px] bg-white px-6 pb-8 pt-5">
                         <View className="mb-4 items-center">
                             <View className="h-1.5 w-12 rounded-full bg-[#fdb4bf]" />
                         </View>
@@ -452,13 +464,29 @@ export default function NuevaVentaScreen() {
                         <FlatList
                             data={itemsCarrito}
                             keyExtractor={(item) => item.producto.id}
-                            showsVerticalScrollIndicator={false}
-                            style={{ maxHeight: 320 }}
+                            showsVerticalScrollIndicator={true}
+                            style={{ maxHeight: ALTO_FILA * 8 }}
+                            contentContainerStyle={{ paddingBottom: 4 }}
+                            getItemLayout={(_, index) => ({
+                                length: ALTO_FILA,
+                                offset: ALTO_FILA * index,
+                                index,
+                            })}
+                            initialNumToRender={10}
+                            removeClippedSubviews={true}
+                            decelerationRate="normal"
+                            scrollEventThrottle={16}
+                            bounces={true}
+                            nestedScrollEnabled={true}
+                            keyboardShouldPersistTaps="handled"
                             ItemSeparatorComponent={() => (
                                 <View className="h-[1px] bg-[#ffe3e8]" />
                             )}
                             renderItem={({ item }) => (
-                                <View className="flex-row items-center py-3">
+                                <View
+                                    style={{ height: ALTO_FILA }}
+                                    className="flex-row items-center py-3"
+                                >
                                     <View className="flex-1 pr-3">
                                         <Text
                                             className="text-[15px] font-semibold text-[#2D2D32]"
@@ -468,9 +496,7 @@ export default function NuevaVentaScreen() {
                                         </Text>
                                         <Text className="mt-0.5 text-[13px] text-[#a15f6d]">
                                             {formatoPesos(
-                                                Number(
-                                                    item.producto.precioVenta
-                                                )
+                                                Number(item.producto.precioVenta)
                                             )}{' '}
                                             c/u
                                         </Text>
@@ -478,9 +504,7 @@ export default function NuevaVentaScreen() {
 
                                     <View className="flex-row items-center rounded-full bg-[#ffcdd4] px-1 mr-3">
                                         <Pressable
-                                            onPress={() =>
-                                                quitarProducto(item.producto)
-                                            }
+                                            onPress={() => quitarProducto(item.producto)}
                                             hitSlop={8}
                                             className="h-8 w-8 items-center justify-center"
                                         >
@@ -492,20 +516,14 @@ export default function NuevaVentaScreen() {
                                         </Text>
 
                                         <Pressable
-                                            onPress={() =>
-                                                agregarProducto(item.producto)
-                                            }
+                                            onPress={() => agregarProducto(item.producto)}
                                             hitSlop={8}
-                                            disabled={
-                                                item.cantidad >=
-                                                item.producto.stock
-                                            }
+                                            disabled={item.cantidad >= item.producto.stock}
                                             className="h-8 w-8 items-center justify-center"
                                         >
                                             <Plus
                                                 color={
-                                                    item.cantidad >=
-                                                        item.producto.stock
+                                                    item.cantidad >= item.producto.stock
                                                         ? '#f4b8c2'
                                                         : '#e57d90'
                                                 }
@@ -522,11 +540,7 @@ export default function NuevaVentaScreen() {
                                     </Text>
 
                                     <Pressable
-                                        onPress={() =>
-                                            eliminarDelCarrito(
-                                                item.producto.id
-                                            )
-                                        }
+                                        onPress={() => eliminarDelCarrito(item.producto.id)}
                                         hitSlop={8}
                                         className="ml-2"
                                     >
@@ -561,30 +575,21 @@ export default function NuevaVentaScreen() {
                                         shadowColor: '#e57d90',
                                         shadowOpacity: 0.3,
                                         shadowRadius: 10,
-                                        shadowOffset: {
-                                            width: 0,
-                                            height: 4,
-                                        },
+                                        shadowOffset: { width: 0, height: 4 },
                                         elevation: 3,
                                     }
                                     : {}),
                             }}
                         >
                             {!procesando && (
-                                <Check
-                                    color="#ffffff"
-                                    size={18}
-                                    style={{ marginRight: 8 }}
-                                />
+                                <Check color="#ffffff" size={18} style={{ marginRight: 8 }} />
                             )}
                             <Text className="text-[16px] font-bold uppercase tracking-wide text-white">
-                                {procesando
-                                    ? 'Procesando...'
-                                    : 'Confirmar venta'}
+                                {procesando ? 'Procesando...' : 'Confirmar venta'}
                             </Text>
                         </Pressable>
-                    </Pressable>
-                </Pressable>
+                    </View>
+                </View>
             </Modal>
         </>
     );

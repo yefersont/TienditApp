@@ -86,7 +86,7 @@ export default function SeleccionarSucursalScreen() {
                 }}
             />
 
-            <View className="flex-1 bg-[#fff7f8]">
+            <View className="flex-1 bg-white">
 
                 {/* Header */}
                 <View className="rounded-b-[40px] bg-[#e57d90]">
