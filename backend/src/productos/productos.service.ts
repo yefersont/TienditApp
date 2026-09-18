@@ -128,4 +128,25 @@ export class ProductosService {
     });
   }
 
+  async actualizarNombre(
+    productoId: string,
+    nombre: string,
+  ) {
+    const nombreLimpio = nombre.trim();
+
+    if (!nombreLimpio) {
+      throw new BadRequestException(
+        'El nombre del producto no puede estar vacío',
+      );
+    }
+
+    return this.prisma.producto.update({
+      where: {
+        id: productoId,
+      },
+      data: {
+        nombre: nombreLimpio,
+      },
+    });
+  }
 }

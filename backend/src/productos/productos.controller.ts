@@ -42,4 +42,21 @@ export class ProductosController {
       usuarioId,
     });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('nombre')
+  actualizarNombre(
+    @Body() body: {
+      productoId: string;
+      nombre: string;
+    },
+  ) {
+    return this.productosService.actualizarNombre(
+      body.productoId,
+      body.nombre,
+    );
+  }
+
+
+
 }
