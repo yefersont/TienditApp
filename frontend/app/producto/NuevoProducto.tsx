@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     ArrowLeft,
     Tag,
@@ -22,38 +22,6 @@ import {
 } from 'lucide-react-native';
 import API_URL from '../../services/apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// =========================
-// DATOS DE EJEMPLO
-// (vendrán del modelo Categoria)
-// =========================
-
-const categorias = [
-    {
-        id: 'b9a863e3-7575-40c0-aac9-dd757e0bc476',
-        nombre: 'Bebidas',
-    },
-    {
-        id: '791ff054-1081-4fd1-b008-4997f6a4de49',
-        nombre: 'Snacks',
-    },
-    {
-        id: '7d917704-17b0-42b3-a19a-94b026b3abf8',
-        nombre: 'Lácteos',
-    },
-    {
-        id: '69e610a4-3cb8-4fed-942d-f8636bfb03aa',
-        nombre: 'Aseo',
-    },
-    {
-        id: 'bda22179-8646-4cf9-ba15-38bf87fda070',
-        nombre: 'Alimentos',
-    },
-    {
-        id: '2c8dac2e-5db9-4f3f-b2be-bf4429641339',
-        nombre: 'Confitería',
-    },
-];
 
 type Campo =
     | 'nombre'
@@ -70,6 +38,7 @@ export default function NuevoProductoScreen() {
         sucursalNombre: string;
     }>();
 
+    const [categorias, setCategorias] = useState<any[]>([]);
     const [nombre, setNombre] = useState('');
     const [categoriaId, setCategoriaId] = useState<string | null>(null);
     const [precioCompra, setPrecioCompra] = useState('');
@@ -165,6 +134,33 @@ export default function NuevoProductoScreen() {
             setGuardando(false);
         }
     };
+
+    const getCategorias = async () => {
+        try {
+            const token = await AsyncStorage.getItem('@tienditapp_token');
+            if (!token) {
+                throw new Error('No hay una sesión activa');
+            }
+            const response = await fetch(`${API_URL}/categorias`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al obtener las categorías');
+            }
+            setCategorias(data);
+        } catch (error) {
+            console.error('Error obteniendo categorías:', error);
+        }
+    };
+
+    useEffect(() => {
+        getCategorias();
+    }, []);
 
     return (
         <>
