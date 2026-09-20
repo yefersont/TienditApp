@@ -1,0 +1,28 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { FinanzasService } from './finanzas.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+@UseGuards(JwtAuthGuard)
+@Controller('finanzas')
+export class FinanzasController {
+  constructor(
+    private readonly finanzasService: FinanzasService,
+  ) { }
+
+  @Get(':sucursalId')
+  obtenerFinanzas(
+    @Param('sucursalId') sucursalId: string,
+    @Query('periodo') periodo: string,
+  ) {
+    return this.finanzasService.obtenerFinanzas(
+      sucursalId,
+      Number(periodo),
+    );
+  }
+}
