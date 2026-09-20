@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { router } from 'expo-router';
 import {
     Animated,
     Dimensions,
@@ -9,7 +10,6 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import {
     X,
     Home,
@@ -18,7 +18,15 @@ import {
     BarChart3,
     Settings,
     LogOut,
+    Receipt,
+    Wallet,
+    PackageSearch,
+    Store,
+    ChevronRight,
 } from 'lucide-react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+
 
 type AsideMenuProps = {
     visible: boolean;
@@ -35,6 +43,12 @@ export default function AsideMenu({
     onClose,
     onSalir,
 }: AsideMenuProps) {
+
+
+    const { sucursalId, sucursalNombre } = useLocalSearchParams<{
+        sucursalId: string;
+        sucursalNombre: string;
+    }>();
 
     const slideAnim = useRef(
         new Animated.Value(asideWidth)
@@ -120,6 +134,7 @@ export default function AsideMenu({
     }, [visible]);
 
 
+
     return (
         <Modal
             visible={visible}
@@ -203,11 +218,98 @@ export default function AsideMenu({
 
                         <View className="flex-1 px-4 pt-5">
 
-                            {/* Opciones principales */}
 
+                            {/* Opciones principales */}
                             <View className="flex-1">
 
-                                {/* Aquí irán las opciones principales */}
+                                <Text className="mb-3 px-4 text-[11px] font-bold uppercase tracking-wider text-[#b58b93]">
+                                    Principal
+                                </Text>
+
+                                <Pressable
+                                    onPress={() =>
+                                        seleccionarOpcion(() => {
+                                            router.push({
+                                                pathname: '/finanzas/finanzas',
+                                                params: {
+                                                    sucursalId,
+                                                    sucursalNombre,
+                                                },
+                                            });
+                                        })
+                                    }
+                                    className="mb-1 flex-row items-center rounded-[14px] px-3 py-3 active:bg-[#fff0f2]"
+                                >
+                                    <View className="h-9 w-9 items-center justify-center rounded-[11px] bg-[#fff0f2]">
+                                        <Wallet color="#e57d90" size={19} />
+                                    </View>
+
+                                    <Text className="ml-3 flex-1 text-[14px] font-medium text-[#2D2D32]">
+                                        Finanzas
+                                    </Text>
+
+                                    <ChevronRight color="#c9a4aa" size={17} />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => seleccionarOpcion(() => { /* Navegación a Historial de ventas */ })}
+                                    className="mb-1 flex-row items-center rounded-[14px] px-3 py-3 active:bg-[#fff0f2]"
+                                >
+                                    <View className="h-9 w-9 items-center justify-center rounded-[11px] bg-[#fff0f2]">
+                                        <Receipt color="#e57d90" size={19} />
+                                    </View>
+
+                                    <Text className="ml-3 flex-1 text-[14px] font-medium text-[#2D2D32]">
+                                        Historial de ventas
+                                    </Text>
+
+                                    <ChevronRight color="#c9a4aa" size={17} />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => seleccionarOpcion(() => { /* Navegación a Reportes */ })}
+                                    className="mb-1 flex-row items-center rounded-[14px] px-3 py-3 active:bg-[#fff0f2]"
+                                >
+                                    <View className="h-9 w-9 items-center justify-center rounded-[11px] bg-[#fff0f2]">
+                                        <BarChart3 color="#e57d90" size={19} />
+                                    </View>
+
+                                    <Text className="ml-3 flex-1 text-[14px] font-medium text-[#2D2D32]">
+                                        Reportes
+                                    </Text>
+
+                                    <ChevronRight color="#c9a4aa" size={17} />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => seleccionarOpcion(() => { /* Navegación a Stock bajo */ })}
+                                    className="mb-1 flex-row items-center rounded-[14px] px-3 py-3 active:bg-[#fff0f2]"
+                                >
+                                    <View className="h-9 w-9 items-center justify-center rounded-[11px] bg-[#fff0f2]">
+                                        <PackageSearch color="#e57d90" size={19} />
+                                    </View>
+
+                                    <Text className="ml-3 flex-1 text-[14px] font-medium text-[#2D2D32]">
+                                        Stock bajo
+                                    </Text>
+
+                                    <ChevronRight color="#c9a4aa" size={17} />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => seleccionarOpcion(() => { /* Navegación a Mi tienda */ })}
+                                    className="mb-1 flex-row items-center rounded-[14px] px-3 py-3 active:bg-[#fff0f2]"
+                                >
+                                    <View className="h-9 w-9 items-center justify-center rounded-[11px] bg-[#fff0f2]">
+                                        <Store color="#e57d90" size={19} />
+                                    </View>
+
+                                    <Text className="ml-3 flex-1 text-[14px] font-medium text-[#2D2D32]">
+                                        Mi tienda
+                                    </Text>
+
+                                    <ChevronRight color="#c9a4aa" size={17} />
+                                </Pressable>
 
                             </View>
 

@@ -451,13 +451,13 @@ export default function HomeScreen() {
           </View>
 
           {/* =========================
-              OPCIONES
+              ACCESOS DIRECTOS
           ========================= */}
 
           <View className="mb-8">
 
             <Text className="mb-3 text-[16px] font-bold text-[#2D2D32]">
-              Opciones
+              Accesos directos
             </Text>
 
             {/* Nueva venta */}
