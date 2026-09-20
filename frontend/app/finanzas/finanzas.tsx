@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
     Pressable,
     ScrollView,
@@ -13,56 +14,93 @@ import {
     DollarSign,
     Package,
 } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API_URL from '../../services/apis';
+
 
 export default function Finanzas() {
     const { sucursalId, sucursalNombre } = useLocalSearchParams<{
         sucursalId: string;
         sucursalNombre: string;
     }>();
+    const [cargando, setCargando] = useState(true);
+    const [data, setData] = useState<any>(null);
+    const [periodo, setPeriodo] = useState('30 días');
 
-    const periodo = '30 días';
 
-    const ventas = 1854200;
-    const costos = 1123500;
-    const utilidad = ventas - costos;
+    const ventasSemana = (data?.ventasPorDia ?? []).map((item) => {
+        const fecha = new Date(`${item.fecha}T00:00:00`);
 
-    const productosRentables = [
-        {
-            nombre: 'Cerveza Corona 250 ML',
-            ventas: 420000,
-            utilidad: 126000,
-        },
-        {
-            nombre: 'Coca Cola 400 ML',
-            ventas: 315000,
-            utilidad: 94500,
-        },
-        {
-            nombre: 'Papas Margarita',
-            ventas: 280000,
-            utilidad: 84000,
-        },
-        {
-            nombre: 'Agua Cristal 600 ML',
-            ventas: 190000,
-            utilidad: 57000,
-        },
-    ];
+        const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-    const ventasSemana = [
-        { dia: 'Lun', valor: 180000 },
-        { dia: 'Mar', valor: 240000 },
-        { dia: 'Mié', valor: 195000 },
-        { dia: 'Jue', valor: 310000 },
-        { dia: 'Vie', valor: 275000 },
-        { dia: 'Sáb', valor: 390000 },
-        { dia: 'Dom', valor: 264000 },
-    ];
-
-    const maxVenta = Math.max(...ventasSemana.map((item) => item.valor));
-
+        return {
+            dia: dias[fecha.getDay()],
+            valor: item.valor,
+        };
+    });
+    const maxVenta = Math.max(
+        ...(ventasSemana.map((item) => item.valor)),
+        1
+    );
     const formatoDinero = (valor: number) =>
         `$${valor.toLocaleString('es-CO')}`;
+
+    const getFinanzas = async () => {
+
+        try {
+
+            setCargando(true)
+
+            const token = await AsyncStorage.getItem('@tienditapp_token')
+
+            if (!token) {
+                router.replace('/login')
+                return
+            }
+            const periodoNumero =
+                periodo === 'Hoy'
+                    ? 1
+                    : periodo === '7 días'
+                        ? 7
+                        : 30;
+
+            const response = await fetch(
+                `${API_URL}/finanzas/${sucursalId}?periodo=${periodoNumero}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            )
+
+            const resultado = await response.json();
+
+            console.log('finanzas recibidas: ', resultado);
+
+            setData(resultado);
+
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setCargando(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getFinanzas()
+    }, [sucursalId, periodo])
+
+    if (cargando) {
+        return (
+            <View className="flex-1 items-center justify-center bg-[#fff7f8]">
+                <Text className="text-[16px] font-bold text-[#e57d90]">
+                    Cargando finanzas...
+                </Text>
+            </View>
+        )
+    }
 
     return (
         <>
@@ -119,6 +157,7 @@ export default function Finanzas() {
                             {['Hoy', '7 días', '30 días'].map((item) => (
                                 <Pressable
                                     key={item}
+                                    onPress={() => setPeriodo(item)}
                                     className={`flex-1 items-center rounded-xl py-2.5 ${item === periodo
                                         ? 'bg-[#e57d90]'
                                         : 'bg-transparent'
@@ -152,7 +191,7 @@ export default function Finanzas() {
                                 </Text>
 
                                 <Text className="mt-1 text-[20px] font-bold text-[#2D2D32]">
-                                    {formatoDinero(ventas)}
+                                    {formatoDinero(data.periodo.ventas)}
                                 </Text>
 
                                 <View className="mt-1 flex-row items-center">
@@ -172,7 +211,7 @@ export default function Finanzas() {
                                 </Text>
 
                                 <Text className="mt-1 text-[20px] font-bold text-[#2D2D32]">
-                                    {formatoDinero(costos)}
+                                    {formatoDinero(data.periodo.costos)}
                                 </Text>
 
                                 <Text className="mt-1 text-[11px] font-medium text-[#a15f6d]">
@@ -195,11 +234,11 @@ export default function Finanzas() {
                                     </Text>
 
                                     <Text className="mt-1 text-[26px] font-bold text-white">
-                                        {formatoDinero(utilidad)}
+                                        {formatoDinero(data.periodo.utilidad)}
                                     </Text>
 
                                     <Text className="mt-1 text-[11px] text-white/80">
-                                        Margen de utilidad: 39.4%
+                                        Margen de utilidad: {data.periodo.margen}%
                                     </Text>
 
                                 </View>
@@ -231,7 +270,7 @@ export default function Finanzas() {
 
                             <View className="flex-row items-end justify-between">
 
-                                {ventasSemana.map((item) => {
+                                {ventasSemana.map((item, index) => {
 
                                     const altura = Math.max(
                                         25,
@@ -240,7 +279,7 @@ export default function Finanzas() {
 
                                     return (
                                         <View
-                                            key={item.dia}
+                                            key={`${item.dia}-${index}`}
                                             className="items-center"
                                         >
 
@@ -272,7 +311,7 @@ export default function Finanzas() {
 
                         <View className="mb-3 flex-row items-center justify-between">
                             <Text className="text-[16px] font-bold text-[#2D2D32]">
-                                Producto más rentable
+                                Top 5 Productos más rentables
                             </Text>
 
                             <Text className="text-[12px] font-medium text-[#a15f6d]">
@@ -282,52 +321,54 @@ export default function Finanzas() {
 
                         <View className="rounded-[18px] bg-white px-4 py-2">
 
-                            {productosRentables.map((producto, index) => (
+                            {data?.productosRentables
+                                ?.slice(0, 5)
+                                .map((producto, index, productos) => (
 
-                                <View
-                                    key={producto.nombre}
-                                    className={`flex-row items-center py-4 ${index !== productosRentables.length - 1
-                                        ? 'border-b border-[#ffe3e8]'
-                                        : ''
-                                        }`}
-                                >
+                                    <View
+                                        key={producto.productoId}
+                                        className={`flex-row items-center py-4 ${index !== productos.length - 1
+                                            ? 'border-b border-[#ffe3e8]'
+                                            : ''
+                                            }`}
+                                    >
 
-                                    <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f2]">
-                                        <Text className="text-[13px] font-bold text-[#e57d90]">
-                                            {index + 1}
-                                        </Text>
+                                        <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f2]">
+                                            <Text className="text-[13px] font-bold text-[#e57d90]">
+                                                {index + 1}
+                                            </Text>
+                                        </View>
+
+                                        <View className="ml-3 flex-1">
+
+                                            <Text
+                                                numberOfLines={1}
+                                                className="text-[13px] font-semibold text-[#2D2D32]"
+                                            >
+                                                {producto.nombre}
+                                            </Text>
+
+                                            <Text className="mt-1 text-[11px] text-[#a15f6d]">
+                                                Ventas: {formatoDinero(producto.ventas)}
+                                            </Text>
+
+                                        </View>
+
+                                        <View className="items-end">
+
+                                            <Text className="text-[13px] font-bold text-[#65b887]">
+                                                +{formatoDinero(producto.utilidad)}
+                                            </Text>
+
+                                            <Text className="mt-1 text-[10px] text-[#a15f6d]">
+                                                utilidad
+                                            </Text>
+
+                                        </View>
+
                                     </View>
 
-                                    <View className="ml-3 flex-1">
-
-                                        <Text
-                                            numberOfLines={1}
-                                            className="text-[13px] font-semibold text-[#2D2D32]"
-                                        >
-                                            {producto.nombre}
-                                        </Text>
-
-                                        <Text className="mt-1 text-[11px] text-[#a15f6d]">
-                                            Ventas: {formatoDinero(producto.ventas)}
-                                        </Text>
-
-                                    </View>
-
-                                    <View className="items-end">
-
-                                        <Text className="text-[13px] font-bold text-[#65b887]">
-                                            +{formatoDinero(producto.utilidad)}
-                                        </Text>
-
-                                        <Text className="mt-1 text-[10px] text-[#a15f6d]">
-                                            utilidad
-                                        </Text>
-
-                                    </View>
-
-                                </View>
-
-                            ))}
+                                ))}
 
                         </View>
 
@@ -349,7 +390,7 @@ export default function Finanzas() {
                                 </Text>
 
                                 <Text className="text-[13px] font-bold text-[#2D2D32]">
-                                    {formatoDinero(ventas)}
+                                    {formatoDinero(data.resumen.ventas)}
                                 </Text>
 
                             </View>
@@ -363,7 +404,7 @@ export default function Finanzas() {
                                 </Text>
 
                                 <Text className="text-[13px] font-bold text-[#2D2D32]">
-                                    {formatoDinero(costos)}
+                                    {formatoDinero(data.resumen.costos)}
                                 </Text>
 
                             </View>
@@ -377,7 +418,7 @@ export default function Finanzas() {
                                 </Text>
 
                                 <Text className="text-[14px] font-bold text-[#65b887]">
-                                    {formatoDinero(utilidad)}
+                                    {formatoDinero(data.resumen.utilidad)}
                                 </Text>
 
                             </View>

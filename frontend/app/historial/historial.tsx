@@ -330,18 +330,18 @@ export default function HistorialAjustes() {
                                                 {/* Tipo */}
                                                 <View
                                                     className={`ml-3 items-center rounded-full px-3 py-1.5 ${movimiento.tipo === 'AJUSTE'
-                                                            ? 'bg-[#fff0f2]'
-                                                            : movimiento.tipo === 'ENTRADA'
-                                                                ? 'bg-[#f1faf5]'
-                                                                : 'bg-[#fdf0f2]'
+                                                        ? 'bg-[#fff0f2]'
+                                                        : movimiento.tipo === 'ENTRADA'
+                                                            ? 'bg-[#f1faf5]'
+                                                            : 'bg-[#fdf0f2]'
                                                         }`}
                                                 >
                                                     <Text
                                                         className={`text-[11px] font-bold ${movimiento.tipo === 'AJUSTE'
-                                                                ? 'text-[#e57d90]'
-                                                                : movimiento.tipo === 'ENTRADA'
-                                                                    ? 'text-[#4c9b6b]'
-                                                                    : 'text-[#d9536f]'
+                                                            ? 'text-[#e57d90]'
+                                                            : movimiento.tipo === 'ENTRADA'
+                                                                ? 'text-[#4c9b6b]'
+                                                                : 'text-[#d9536f]'
                                                             }`}
                                                     >
                                                         {movimiento.tipo === 'SALIDA'
