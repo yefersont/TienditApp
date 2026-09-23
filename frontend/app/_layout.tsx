@@ -77,6 +77,20 @@ function RootLayoutNav() {
         />
 
         <Stack.Screen
+          name="historial"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="finanzas"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name="modal"
           options={{
             presentation: 'modal',
@@ -85,7 +99,6 @@ function RootLayoutNav() {
         />
       </Stack>
 
-      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }

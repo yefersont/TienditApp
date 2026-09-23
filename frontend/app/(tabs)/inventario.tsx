@@ -20,6 +20,7 @@ import {
     PackageSearch,
 } from 'lucide-react-native';
 import Loader from '../../components/loader';
+import AppHeader from '../../components/AppHeader';
 import API_URL from '../../services/apis';
 
 type Producto = {
@@ -127,24 +128,11 @@ export default function InventarioScreen() {
             <View className="flex-1 bg-[#fff7f8]">
 
                 {/* Header */}
-                <View className="rounded-b-[40px] bg-[#e57d90]">
-                    <SafeAreaView edges={['top']}>
-                        <View className="h-[80px] items-center justify-center">
+                <AppHeader
+                    titulo="Inventario"
+                    onBack={() => router.back()}
+                />
 
-                            <Pressable
-                                onPress={() => router.back()}
-                                hitSlop={12}
-                                className="absolute left-4 top-1/2 -mt-4 h-8 w-8 items-center justify-center rounded-full active:bg-white/15"
-                            >
-                                <ArrowLeft color="#ffffff" size={22} />
-                            </Pressable>
-
-                            <Text className="mt-1 text-[24px] font-bold text-white">
-                                Inventario
-                            </Text>
-                        </View>
-                    </SafeAreaView>
-                </View>
 
                 {/* Contenido */}
                 <SafeAreaView
